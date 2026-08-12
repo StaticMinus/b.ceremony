@@ -26,37 +26,44 @@ const STATS = [
 
 const GALLERY_ITEMS = [
   {
-    type: "image",
     src: "/portrait.jpg",
     title: "Obanze Akoji of Ehime Mbano",
     desc: "Principal Chieftaincy Title (plus 3 other traditional titles)",
   },
   {
-    type: "image",
     src: "/executive_portrait.jpg",
     title: "Executive Chairman (2009–2019)",
     desc: "National Salaries, Incomes and Wages Commission",
   },
   {
-    type: "image",
     src: "/ksm_ceremonial.jpg",
     title: "Knight of St. Mulumba (KSM)",
     desc: "4th Degree Ceremonial Honor & Church Leadership",
   },
   {
-    type: "placeholder",
-    title: "National Honours Ceremony",
-    desc: "Conferment of MFR & NPOM Awards",
+    src: "/official_standing.jpg",
+    title: "Official State Portrait",
+    desc: "National Public Service & Official State Duties",
   },
   {
-    type: "placeholder",
-    title: "Academic & Research Distinction",
-    desc: "Doctorate Degree (PhD) & FNIM Fellowship",
+    src: "/family_gathering_1.jpg",
+    title: "Family Unity & Generations",
+    desc: "Surrounded by Children, Grandchildren & Loved Ones",
   },
   {
-    type: "placeholder",
-    title: "Humanitarian Philanthropy",
-    desc: "Generations of Service to Family & Community",
+    src: "/family_gathering_2.jpg",
+    title: "Family Celebration",
+    desc: "Cherished Family Moments & Generations of Joy",
+  },
+  {
+    src: "/family_father_son.jpg",
+    title: "Father & Son",
+    desc: "Warm Fellowship with Chief Dr. Daniel Egbule",
+  },
+  {
+    src: "/family_granddaughter.jpg",
+    title: "Grandfather's Love",
+    desc: "Precious Moments with Grandchildren",
   },
 ];
 
@@ -335,23 +342,13 @@ export default function Home() {
             {GALLERY_ITEMS.map((item, i) => (
               <FadeIn key={item.title} delay={i * 0.08} scale>
                 <TiltCard className={styles.galleryCard} maxTilt={5}>
-                  {item.type === "image" ? (
-                    <div className={styles.galleryImagePlaceholder} style={{ background: "#640d14", padding: 0 }}>
-                      <img
-                        src={item.src}
-                        alt={item.title}
-                        style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top center" }}
-                      />
-                    </div>
-                  ) : (
-                    <div className={styles.galleryImagePlaceholder}>
-                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <polyline points="21 15 16 10 5 21" />
-                      </svg>
-                    </div>
-                  )}
+                  <div className={styles.galleryImagePlaceholder} style={{ background: "#640d14", padding: 0, height: "240px" }}>
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 20%" }}
+                    />
+                  </div>
                   <div className={styles.galleryCaption}>
                     <strong style={{ color: "var(--color-text)", display: "block" }}>{item.title}</strong>
                     <div style={{ fontSize: "0.8rem", color: "var(--color-text-tertiary)", marginTop: "0.2rem" }}>
