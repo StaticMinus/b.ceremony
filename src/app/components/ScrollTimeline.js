@@ -16,27 +16,35 @@ const TIMELINE_DATA = [
     year: "1970s – 1980s",
     title: "Academic & Intellectual Mastery",
     subtitle: "Doctorate Degree (PhD)",
-    desc: "Pursued higher education with scholarly distinction, ultimately earning a PhD. His intellectual depth and commitment to research opened doors to high-level public service and mentorship.",
+    desc: "Pursued higher education with scholarly distinction, ultimately earning his PhD. His intellectual depth and commitment to research opened doors to high-level public service and national governance.",
     icon: "🎓",
   },
   {
     year: "1990s",
-    title: "Fellowship & National Leadership",
-    desc: "Recognized as a Fellow of the Nigerian Institute of Management (FNIM) for stellar administrative acumen, public sector management, and institutional governance.",
+    title: "Fellowship & Professional Distinction",
+    subtitle: "FNIM",
+    desc: "Recognized as a Fellow of the Nigerian Institute of Management (FNIM) for stellar administrative acumen, public sector governance, and executive management leadership.",
     icon: "🏛️",
   },
   {
-    year: "2000s",
-    title: "National Honours & Chieftaincy",
-    subtitle: "MFR · NPOM · Obanze Akoji",
-    desc: "Conferred with Member of the Order of the Federal Republic (MFR) and National Productivity Order of Merit (NPOM) by the Federal Government of Nigeria. Installed as the traditional Obanze Akoji of Ehime Mbano.",
+    year: "2009 – 2019",
+    title: "Executive Chairman",
+    subtitle: "National Salaries, Incomes & Wages Commission",
+    desc: "Appointed and served as Executive Chairman of the National Salaries, Incomes and Wages Commission from 2009 to 2019, steering national wage policy, compensation reforms, and public service wage equity.",
+    icon: "⚖️",
+  },
+  {
+    year: "National Honours & Chieftaincy",
+    title: "MFR · NPOM · Traditional Titles",
+    subtitle: "Obanze Akoji & 3 Traditional Titles",
+    desc: "Conferred with Member of the Order of the Federal Republic (MFR) and National Productivity Order of Merit (NPOM). Installed as the Obanze Akoji of Ehime Mbano, along with three other traditional chieftaincy titles.",
     icon: "👑",
   },
   {
     year: "2010s – 2026",
-    title: "Knight of St. Mulumba & Eternal Legacy",
-    subtitle: "KSM · Community Pillar",
-    desc: "A devoted Knight of St. Mulumba (KSM). Spent his later years dedicated to family, philanthropy, church leadership, and community development before his peaceful transition to eternal glory.",
+    title: "Knight of St. Mulumba & Philanthropic Legacy",
+    subtitle: "KSM (4th Degree)",
+    desc: "A devoted 4th Degree Knight of St. Mulumba (KSM). Dedicated his life to church leadership, humanitarian philanthropy, and community upliftment before his peaceful transition to eternal glory.",
     icon: "✝️",
   },
 ];
@@ -69,7 +77,7 @@ export default function ScrollTimeline() {
 
           return (
             <motion.div
-              key={item.year}
+              key={item.year + item.title}
               className={`${styles.timelineRow} ${
                 isEven ? styles.timelineRowLeft : styles.timelineRowRight
               }`}

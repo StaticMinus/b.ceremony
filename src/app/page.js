@@ -12,8 +12,8 @@ import ScrollTimeline from "./components/ScrollTimeline";
 
 /* 
  * TASTE-SKILL DESIGN READ:
- * "Reading this as: Regal Editorial Memorial and Celebration of Life for High Chief Sir Dr. Richard O. Egbule
- * (MFR, NPOM, KSM), Obanze Akoji of Ehime Mbano. Clean parchment light mode default with dark mode toggle,
+ * "Regal Editorial Memorial and Celebration of Life for High Chief Sir Richard O. Egbule
+ * (KSM, PHD, FNIM, MFR, NPOM), Obanze Akoji of Ehime Mbano. Clean parchment light mode default with dark mode toggle,
  * Cinzel typography, uncropped portrait presentation, and zero scroll gaps."
  */
 
@@ -24,13 +24,40 @@ const STATS = [
   { value: 1, suffix: "", label: "Extraordinary Legacy" },
 ];
 
-const GALLERY_PLACEHOLDERS = [
-  { title: "Chieftaincy Installation", desc: "Obanze Akoji of Ehime Mbano" },
-  { title: "National Honours Ceremony", desc: "MFR & NPOM Awards" },
-  { title: "Academic Accomplishments", desc: "PhD Conferment & Fellowship" },
-  { title: "Knights of St. Mulumba", desc: "Church & Faith Leadership" },
-  { title: "Family Moments", desc: "Generations of Love & Unity" },
-  { title: "Community Development", desc: "Service to Ehime Mbano" },
+const GALLERY_ITEMS = [
+  {
+    type: "image",
+    src: "/portrait.jpg",
+    title: "Obanze Akoji of Ehime Mbano",
+    desc: "Principal Chieftaincy Title (plus 3 other traditional titles)",
+  },
+  {
+    type: "image",
+    src: "/executive_portrait.jpg",
+    title: "Executive Chairman (2009–2019)",
+    desc: "National Salaries, Incomes and Wages Commission",
+  },
+  {
+    type: "image",
+    src: "/ksm_ceremonial.jpg",
+    title: "Knight of St. Mulumba (KSM)",
+    desc: "4th Degree Ceremonial Honor & Church Leadership",
+  },
+  {
+    type: "placeholder",
+    title: "National Honours Ceremony",
+    desc: "Conferment of MFR & NPOM Awards",
+  },
+  {
+    type: "placeholder",
+    title: "Academic & Research Distinction",
+    desc: "Doctorate Degree (PhD) & FNIM Fellowship",
+  },
+  {
+    type: "placeholder",
+    title: "Humanitarian Philanthropy",
+    desc: "Generations of Service to Family & Community",
+  },
 ];
 
 const BURIAL_EVENTS = [
@@ -118,7 +145,7 @@ export default function Home() {
                 <div className={styles.heroPortraitInner}>
                   <img
                     src="/portrait.jpg"
-                    alt="High Chief Sir Dr. Richard O. Egbule"
+                    alt="High Chief Sir Richard O. Egbule"
                     className={styles.heroPortraitImg}
                   />
                 </div>
@@ -140,7 +167,7 @@ export default function Home() {
               delay={0.25}
               stagger={0.05}
             >
-              HIGH CHIEF (SIR) DR. RICHARD O. EGBULE
+              HIGH CHIEF (SIR) RICHARD O. EGBULE
             </TextReveal>
 
             <FadeIn delay={0.55}>
@@ -163,7 +190,7 @@ export default function Home() {
 
             <FadeIn delay={0.95}>
               <p className={styles.heroDescription}>
-                With gratitude to God for a life well lived, the family announces the transition to Eternal Glory of our beloved Father, Father-in-law, Grandfather, Uncle, Benefactor, and National Hero.
+                With gratitude to God for a life well lived, the family announces the transition to Eternal Glory of our Father, Father-in-law, Grandfather, Uncle, Benefactor, and National Hero.
               </p>
             </FadeIn>
 
@@ -188,7 +215,7 @@ export default function Home() {
         <div className="container">
           <FadeIn direction="up">
             <p className={styles.quoteBannerText}>
-              &ldquo;What we have once enjoyed deeply we can never lose. All that we love deeply becomes a part of us.&rdquo;
+              &ldquo;A lifetime of humanitarian philanthropy will forever remain his indelible legacy. We miss you dearly, Dad&rdquo;
             </p>
             <p className={`caption text-accent ${styles.quoteBannerAuthor}`}>
               — The Egbule Family
@@ -198,7 +225,7 @@ export default function Home() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════ */}
-      {/* LEGACY & UNCROPPED BIOGRAPHY IMAGE                         */}
+      {/* LEGACY & EXECUTIVE BIOGRAPHY                               */}
       {/* ═══════════════════════════════════════════════════════════ */}
       <section>
         <div className="container-wide">
@@ -206,8 +233,8 @@ export default function Home() {
             <FadeIn direction="left" scale>
               <div className={styles.biographyImageWrapper}>
                 <img
-                  src="/portrait.jpg"
-                  alt="High Chief Sir Dr. Richard O. Egbule portrait"
+                  src="/executive_portrait.jpg"
+                  alt="High Chief Sir Richard O. Egbule Executive Portrait"
                   className={styles.biographyImg}
                 />
               </div>
@@ -219,18 +246,24 @@ export default function Home() {
               </FadeIn>
 
               <TextReveal className="headline" delay={0.2} type="word">
-                Servant Leader & National Patriot
+                Statesman, Philanthropist & Executive Leader
               </TextReveal>
 
               <FadeIn direction="right" delay={0.35}>
                 <p className="body text-secondary">
-                  High Chief Sir Dr. Richard O. Egbule was a distinguished son of Umuezeala-ihu, Umunakanu-Owerre in Ehime Mbano Local Government Area, Imo State. His lifetime of meritorious service earned him national honors: Member of the Order of the Federal Republic (MFR) and the National Productivity Order of Merit (NPOM).
+                  High Chief Sir Richard O. Egbule was a distinguished son of Umuezeala-ihu, Umunakanu-Owerre in Ehime Mbano Local Government Area, Imo State. A patriot of extraordinary caliber, he served as the <strong>Executive Chairman of the National Salaries, Incomes and Wages Commission from 2009 to 2019</strong>, shaping national wage policy, public sector compensation standards, and institutional equity across Nigeria.
                 </p>
               </FadeIn>
 
               <FadeIn direction="right" delay={0.45}>
                 <p className="body text-secondary">
-                  A Fellow of the Nigerian Institute of Management (FNIM) and a Knight of St. Mulumba (KSM), he combined academic excellence (PhD) with unyielding faith, administrative wisdom, and traditional leadership as the Obanze Akoji of Ehime Mbano.
+                  His meritorious service to the nation was recognized with national honors: Member of the Order of the Federal Republic (MFR) and National Productivity Order of Merit (NPOM). A Fellow of the Nigerian Institute of Management (FNIM) and a 4th Degree Knight of St. Mulumba (KSM), he combined academic excellence (PhD) with unyielding Christian faith, wisdom, and leadership.
+                </p>
+              </FadeIn>
+
+              <FadeIn direction="right" delay={0.55}>
+                <p className="body text-secondary">
+                  In addition to his principal traditional title as the <strong>Obanze Akoji of Ehime Mbano</strong>, High Chief Sir Richard O. Egbule held <strong>three other traditional chieftaincy titles</strong>, bestowed upon him in honor of his vast humanitarian philanthropy, community development, and wisdom.
                 </p>
               </FadeIn>
             </div>
@@ -292,25 +325,35 @@ export default function Home() {
               <span className="caption">Memories & Tribute</span>
               <h2 className="headline">Photo Gallery</h2>
               <p className="body text-secondary" style={{ marginTop: "0.5rem" }}>
-                Celebrating moments of family, chieftaincy, academic honors, and service.
+                Celebrating moments of family, chieftaincy, public service, and faith.
               </p>
               <div className={styles.sectionDivider} />
             </div>
           </FadeIn>
 
           <div className={styles.galleryGrid}>
-            {GALLERY_PLACEHOLDERS.map((item, i) => (
+            {GALLERY_ITEMS.map((item, i) => (
               <FadeIn key={item.title} delay={i * 0.08} scale>
                 <TiltCard className={styles.galleryCard} maxTilt={5}>
-                  <div className={styles.galleryImagePlaceholder}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                  </div>
+                  {item.type === "image" ? (
+                    <div className={styles.galleryImagePlaceholder} style={{ background: "#640d14", padding: 0 }}>
+                      <img
+                        src={item.src}
+                        alt={item.title}
+                        style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top center" }}
+                      />
+                    </div>
+                  ) : (
+                    <div className={styles.galleryImagePlaceholder}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                    </div>
+                  )}
                   <div className={styles.galleryCaption}>
-                    <strong>{item.title}</strong>
+                    <strong style={{ color: "var(--color-text)", display: "block" }}>{item.title}</strong>
                     <div style={{ fontSize: "0.8rem", color: "var(--color-text-tertiary)", marginTop: "0.2rem" }}>
                       {item.desc}
                     </div>
