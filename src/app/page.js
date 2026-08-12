@@ -31,7 +31,7 @@ const GALLERY_ITEMS = [
     desc: "Principal Chieftaincy Title (plus 3 other traditional titles)",
   },
   {
-    src: "/corporate_portrait_hd.png",
+    src: "/corporate_portrait_hd.jpg",
     title: "Distinguished Corporate Leadership",
     desc: "Executive Excellence & Public Policy Statesman",
   },
@@ -51,7 +51,7 @@ const GALLERY_ITEMS = [
     desc: "National Public Service & Official State Ceremonies",
   },
   {
-    src: "/father_son_car_selfie.png",
+    src: "/father_son_car_selfie.jpg",
     title: "Father & Son Journey",
     desc: "Cherished Moments with Chief Dr. Daniel Egbule",
   },
