@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import styles from "./page.module.css";
 
 import FadeIn from "./components/FadeIn";
@@ -8,7 +9,6 @@ import AnimatedCounter from "./components/AnimatedCounter";
 import TiltCard from "./components/TiltCard";
 import RSVPForm from "./components/RSVPForm";
 import MagneticButton from "./components/MagneticButton";
-import AdminSubmissions from "./components/AdminSubmissions";
 import ScrollTimeline from "./components/ScrollTimeline";
 
 /* 
@@ -384,10 +384,6 @@ export default function Home() {
               <RSVPForm />
             </div>
           </FadeIn>
-
-          <div style={{ textAlign: "center", display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
-            <AdminSubmissions />
-          </div>
         </div>
       </section>
 
@@ -412,6 +408,12 @@ export default function Home() {
                 MAY HIS GENTLE SOUL REST IN PERFECT PEACE. AMEN.
               </p>
             </MagneticButton>
+
+            <div style={{ marginTop: "2rem" }}>
+              <Link href="/admin" style={{ fontSize: "0.75rem", color: "var(--color-text-tertiary)", textDecoration: "none" }}>
+                🔒 Family Admin Dashboard
+              </Link>
+            </div>
           </FadeIn>
         </div>
       </footer>
