@@ -12,7 +12,6 @@ export default function RSVPForm() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    email: "",
     phone: "",
     attending: "yes",
     guests: "0",
@@ -99,35 +98,20 @@ export default function RSVPForm() {
             </div>
           </div>
 
-          {/* Email & Phone */}
+          {/* Phone / WhatsApp & Attendance */}
           <div className={styles.rsvpRow}>
-            <div className="input-group">
-              <label htmlFor="email">Email Address</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder="your.email@domain.com"
-                value={form.email}
-                onChange={handleChange}
-              />
-            </div>
             <div className="input-group">
               <label htmlFor="phone">Phone / WhatsApp</label>
               <input
                 id="phone"
                 name="phone"
                 type="tel"
+                required
                 placeholder="+234..."
                 value={form.phone}
                 onChange={handleChange}
               />
             </div>
-          </div>
-
-          {/* Attending + Guests */}
-          <div className={styles.rsvpRow}>
             <div className="input-group">
               <label htmlFor="attending">Will You Attend?</label>
               <select
@@ -141,6 +125,10 @@ export default function RSVPForm() {
                 <option value="maybe">Not sure yet</option>
               </select>
             </div>
+          </div>
+
+          {/* Guests + Lodging */}
+          <div className={styles.rsvpRow}>
             <div className="input-group">
               <label htmlFor="guests">Number of Guests</label>
               <select
@@ -156,10 +144,6 @@ export default function RSVPForm() {
                 <option value="4">+4 or more</option>
               </select>
             </div>
-          </div>
-
-          {/* Lodging + Bus */}
-          <div className={styles.rsvpRow}>
             <div className="input-group">
               <label htmlFor="lodging">Need Accommodation / Lodging?</label>
               <select
@@ -172,18 +156,20 @@ export default function RSVPForm() {
                 <option value="yes">Yes, please assist with lodging</option>
               </select>
             </div>
-            <div className="input-group">
-              <label htmlFor="bus">Following the Bus Charter?</label>
-              <select
-                id="bus"
-                name="bus"
-                value={form.bus}
-                onChange={handleChange}
-              >
-                <option value="no">No, private transport</option>
-                <option value="yes">Yes, I will join the bus transport</option>
-              </select>
-            </div>
+          </div>
+
+          {/* Bus Charter */}
+          <div className="input-group">
+            <label htmlFor="bus">Following the Bus Charter?</label>
+            <select
+              id="bus"
+              name="bus"
+              value={form.bus}
+              onChange={handleChange}
+            >
+              <option value="no">No, private transport</option>
+              <option value="yes">Yes, I will join the bus transport</option>
+            </select>
           </div>
 
           {/* Message */}

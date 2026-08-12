@@ -17,9 +17,9 @@ export async function POST(request) {
       message,
     } = body;
 
-    if (!firstName || !lastName || !email) {
+    if (!firstName || !lastName) {
       return NextResponse.json(
-        { error: "First name, last name, and email are required." },
+        { error: "First name and last name are required." },
         { status: 400 }
       );
     }
@@ -28,7 +28,7 @@ export async function POST(request) {
       id: "rsvp_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      email: email.trim(),
+      email: (email || "").trim(),
       phone: (phone || "").trim(),
       attending: attending || "yes",
       guests: guests || "0",
@@ -61,8 +61,7 @@ export async function GET(request) {
       const headers = [
         "First Name",
         "Last Name",
-        "Email",
-        "Phone",
+        "Phone / WhatsApp",
         "Attending",
         "Guests",
         "Need Lodging",
@@ -74,7 +73,6 @@ export async function GET(request) {
       const rows = attendees.map((a) => [
         `"${a.firstName || ""}"`,
         `"${a.lastName || ""}"`,
-        `"${a.email || ""}"`,
         `"${a.phone || ""}"`,
         `"${a.attending || ""}"`,
         `"${a.guests || ""}"`,

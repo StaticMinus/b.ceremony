@@ -36,7 +36,7 @@ export default function AdminPage() {
 
   /* Filtering */
   const filtered = attendees.filter((item) => {
-    const nameMatch = `${item.firstName} ${item.lastName} ${item.email} ${item.phone}`
+    const nameMatch = `${item.firstName} ${item.lastName} ${item.phone}`
       .toLowerCase()
       .includes(search.toLowerCase());
 
@@ -84,7 +84,7 @@ export default function AdminPage() {
         </div>
 
         {/* Metrics Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
           <div className={styles.biographyCard} style={{ padding: "1.25rem", textAlign: "center" }}>
             <span className="caption">Total Submissions</span>
             <h3 className="title" style={{ fontSize: "2rem", color: "var(--color-accent)", marginTop: "0.2rem" }}>
@@ -122,7 +122,7 @@ export default function AdminPage() {
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
             <input
               type="text"
-              placeholder="Search by name, email, or phone..."
+              placeholder="Search by name or phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -171,7 +171,7 @@ export default function AdminPage() {
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--color-border)", color: "var(--color-accent)" }}>
                   <th style={{ padding: "1rem 0.75rem" }}>Attendee Name</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Contact Info</th>
+                  <th style={{ padding: "1rem 0.75rem" }}>Phone / WhatsApp</th>
                   <th style={{ padding: "1rem 0.75rem" }}>Status</th>
                   <th style={{ padding: "1rem 0.75rem" }}>Guests</th>
                   <th style={{ padding: "1rem 0.75rem" }}>Lodging</th>
@@ -182,13 +182,12 @@ export default function AdminPage() {
               </thead>
               <tbody>
                 {filtered.map((item) => (
-                  <tr key={item.id || item.email} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  <tr key={item.id || item.phone || item.firstName} style={{ borderBottom: "1px solid var(--color-border)" }}>
                     <td style={{ padding: "1rem 0.75rem", fontWeight: "600" }}>
                       {item.firstName} {item.lastName}
                     </td>
                     <td style={{ padding: "1rem 0.75rem" }}>
-                      <div>{item.phone || "—"}</div>
-                      <div style={{ color: "var(--color-text-tertiary)", fontSize: "0.8rem" }}>{item.email}</div>
+                      {item.phone || "—"}
                     </td>
                     <td style={{ padding: "1rem 0.75rem" }}>
                       <span
