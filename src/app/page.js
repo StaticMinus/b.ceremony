@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import styles from "./page.module.css";
 
 import FadeIn from "./components/FadeIn";
@@ -408,12 +407,6 @@ export default function Home() {
                 MAY HIS GENTLE SOUL REST IN PERFECT PEACE. AMEN.
               </p>
             </MagneticButton>
-
-            <div style={{ marginTop: "2rem" }}>
-              <Link href="/admin" style={{ fontSize: "0.75rem", color: "var(--color-text-tertiary)", textDecoration: "none" }}>
-                🔒 Family Admin Dashboard
-              </Link>
-            </div>
           </FadeIn>
         </div>
       </footer>
