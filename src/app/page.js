@@ -31,6 +31,11 @@ const GALLERY_ITEMS = [
     desc: "Principal Chieftaincy Title (plus 3 other traditional titles)",
   },
   {
+    src: "/corporate_portrait_hd.png",
+    title: "Distinguished Corporate Leadership",
+    desc: "Executive Excellence & Public Policy Statesman",
+  },
+  {
     src: "/executive_portrait.jpg",
     title: "Executive Chairman (2009–2019)",
     desc: "National Salaries, Incomes and Wages Commission",
@@ -38,12 +43,17 @@ const GALLERY_ITEMS = [
   {
     src: "/ksm_ceremonial.jpg",
     title: "Knight of St. Mulumba (KSM)",
-    desc: "4th Degree Ceremonial Honor & Church Leadership",
+    desc: "4th Degree Ceremonial Honor & Faith Leadership",
   },
   {
     src: "/official_standing.jpg",
-    title: "Official State Portrait",
-    desc: "National Public Service & Official State Duties",
+    title: "Official State Duties",
+    desc: "National Public Service & Official State Ceremonies",
+  },
+  {
+    src: "/father_son_car_selfie.png",
+    title: "Father & Son Journey",
+    desc: "Cherished Moments with Chief Dr. Daniel Egbule",
   },
   {
     src: "/family_gathering_1.jpg",
@@ -57,7 +67,7 @@ const GALLERY_ITEMS = [
   },
   {
     src: "/family_father_son.jpg",
-    title: "Father & Son",
+    title: "Father & Son Fellowship",
     desc: "Warm Fellowship with Chief Dr. Daniel Egbule",
   },
   {
