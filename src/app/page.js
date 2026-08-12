@@ -242,49 +242,82 @@ export default function Home() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════ */}
-      {/* LEGACY & EXECUTIVE BIOGRAPHY                               */}
+      {/* REDESIGNED LUXURY BIOGRAPHY SECTION                         */}
       {/* ═══════════════════════════════════════════════════════════ */}
-      <section>
+      <section style={{ paddingBlock: "var(--space-2xl)" }}>
         <div className="container-wide">
-          <div className={styles.biographyGrid}>
-            <FadeIn direction="left" scale>
-              <div className={styles.biographyImageWrapper}>
-                <img
-                  src="/executive_portrait.jpg"
-                  alt="High Chief Sir Richard O. Egbule Executive Portrait"
-                  className={styles.biographyImg}
-                />
+          <FadeIn direction="up" scale blur>
+            <div className={styles.biographyCardWrapper}>
+              <div className={styles.biographyGrid}>
+                {/* Mosaic Image Frame */}
+                <div className={styles.biographyMosaicContainer}>
+                  <div className={styles.biographyMosaicMain}>
+                    <img
+                      src="/executive_portrait.jpg"
+                      alt="High Chief Sir Richard O. Egbule Executive Portrait"
+                      className={styles.biographyImgMain}
+                    />
+                  </div>
+
+                  {/* Floating Achievement Badge */}
+                  <div className={styles.biographyMosaicBadge}>
+                    <span className={styles.biographyBadgeIcon}>🏛️</span>
+                    <div className={styles.biographyBadgeText}>
+                      <div>10 YEARS OF EXECUTIVE SERVICE</div>
+                      <div style={{ color: "var(--color-text-secondary)", fontSize: "0.7rem", fontWeight: "normal" }}>
+                        National Wages Commission (2009–2019)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Editorial Biography Text & Feature Cards */}
+                <div className={styles.biographyTextContent}>
+                  <span className="caption">A Legacy of Honor</span>
+
+                  <h2 className={styles.biographyHeadline}>
+                    Statesman, Philanthropist & Executive Leader
+                  </h2>
+
+                  <p className={styles.biographySubhead}>
+                    High Chief (Sir) Richard O. Egbule <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>(KSM, PHD, FNIM, MFR, NPOM)</span>
+                  </p>
+
+                  <div className={styles.biographyFeatureGrid}>
+                    <div className={styles.biographyFeatureItem}>
+                      <div className={styles.biographyFeatureIcon}>📜</div>
+                      <div className={styles.biographyFeatureText}>
+                        <h4>Public Sector Governance & Reform</h4>
+                        <p>
+                          Served as the <strong>Executive Chairman of the National Salaries, Incomes and Wages Commission from 2009 to 2019</strong>, shaping national wage policy, public sector compensation standards, and institutional equity across Nigeria.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.biographyFeatureItem}>
+                      <div className={styles.biographyFeatureIcon}>🎖️</div>
+                      <div className={styles.biographyFeatureText}>
+                        <h4>National & Faith Honors</h4>
+                        <p>
+                          Conferred with Member of the Order of the Federal Republic (<strong>MFR</strong>) and National Productivity Order of Merit (<strong>NPOM</strong>). A Fellow of the Nigerian Institute of Management (<strong>FNIM</strong>), 4th Degree Knight of St. Mulumba (<strong>KSM</strong>), and holder of a Doctorate Degree (<strong>PhD</strong>).
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.biographyFeatureItem}>
+                      <div className={styles.biographyFeatureIcon}>👑</div>
+                      <div className={styles.biographyFeatureText}>
+                        <h4>Traditional Leadership & Philanthropy</h4>
+                        <p>
+                          In addition to his principal traditional title as the <strong>Obanze Akoji of Ehime Mbano</strong>, he was honored with <strong>three other traditional chieftaincy titles</strong> in recognition of his vast humanitarian philanthropy and community service.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </FadeIn>
-
-            <div className={styles.biographyText}>
-              <FadeIn direction="right" delay={0.1}>
-                <span className="caption">A Legacy of Honor</span>
-              </FadeIn>
-
-              <TextReveal className="headline" delay={0.2} type="word">
-                Statesman, Philanthropist & Executive Leader
-              </TextReveal>
-
-              <FadeIn direction="right" delay={0.35}>
-                <p className="body text-secondary">
-                  High Chief Sir Richard O. Egbule was a distinguished son of Umuezeala-ihu, Umunakanu-Owerre in Ehime Mbano Local Government Area, Imo State. A patriot of extraordinary caliber, he served as the <strong>Executive Chairman of the National Salaries, Incomes and Wages Commission from 2009 to 2019</strong>, shaping national wage policy, public sector compensation standards, and institutional equity across Nigeria.
-                </p>
-              </FadeIn>
-
-              <FadeIn direction="right" delay={0.45}>
-                <p className="body text-secondary">
-                  His meritorious service to the nation was recognized with national honors: Member of the Order of the Federal Republic (MFR) and National Productivity Order of Merit (NPOM). A Fellow of the Nigerian Institute of Management (FNIM) and a 4th Degree Knight of St. Mulumba (KSM), he combined academic excellence (PhD) with unyielding Christian faith, wisdom, and leadership.
-                </p>
-              </FadeIn>
-
-              <FadeIn direction="right" delay={0.55}>
-                <p className="body text-secondary">
-                  In addition to his principal traditional title as the <strong>Obanze Akoji of Ehime Mbano</strong>, High Chief Sir Richard O. Egbule held <strong>three other traditional chieftaincy titles</strong>, bestowed upon him in honor of his vast humanitarian philanthropy, community development, and wisdom.
-                </p>
-              </FadeIn>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 

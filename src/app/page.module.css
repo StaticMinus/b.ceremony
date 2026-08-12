@@ -1,5 +1,5 @@
 /* ===================================================================
-   PAGE STYLES — High Chief Sir Dr. Richard O. Egbule Memorial
+   PAGE STYLES — High Chief Sir Richard O. Egbule Memorial
    =================================================================== */
 
 /* --- Hero Redesign ----------------------------------------------- */
@@ -185,48 +185,153 @@
   opacity: 0.6;
 }
 
-/* --- Biography & Uncropped Image -------------------------------- */
+/* --- Luxury Desktop Redesign: Biography Section ----------------- */
+.biographyCardWrapper {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.biographyCardWrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+}
+
 .biographyGrid {
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: var(--space-xl);
+  grid-template-columns: 1fr 1.15fr;
+  gap: var(--space-2xl);
   align-items: center;
 }
 
-.biographyGrid.reversed {
-  direction: rtl;
-}
-
-.biographyGrid.reversed > * {
-  direction: ltr;
-}
-
-.biographyImageWrapper {
+.biographyMosaicContainer {
+  position: relative;
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.biographyMosaicMain {
+  width: 100%;
+  max-width: 400px;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
+  border: 2px solid var(--color-accent);
+  box-shadow: var(--shadow-lg);
   background: #640d14;
+  position: relative;
+  z-index: 1;
 }
 
-.biographyImg {
+.biographyImgMain {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
 }
 
-.biographyText {
+.biographyMosaicBadge {
+  position: absolute;
+  bottom: -20px;
+  right: -10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.biographyText p {
+.biographyBadgeIcon {
+  font-size: 1.3rem;
+}
+
+.biographyBadgeText {
+  font-family: var(--font-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.biographyTextContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.biographyHeadline {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3.5vw, 2.6rem);
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+.biographySubhead {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-top: -0.5rem;
+}
+
+.biographyFeatureGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.biographyFeatureItem {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+
+.biographyFeatureItem:hover {
+  transform: translateX(4px);
+  border-color: var(--color-accent);
+}
+
+.biographyFeatureIcon {
+  font-size: 1.4rem;
+  padding: 0.4rem;
+  background: var(--color-accent-soft);
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.biographyFeatureText h4 {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.2rem;
+}
+
+.biographyFeatureText p {
+  font-size: 0.88rem;
   color: var(--color-text-secondary);
-  line-height: 1.75;
-  font-size: 1rem;
+  line-height: 1.6;
 }
 
 /* --- Stats Grid -------------------------------------------------- */
@@ -643,11 +748,11 @@
 
   .biographyGrid {
     grid-template-columns: 1fr;
-    gap: var(--space-lg);
+    gap: var(--space-xl);
   }
 
-  .biographyGrid.reversed {
-    direction: ltr;
+  .biographyMosaicBadge {
+    right: 10px;
   }
 
   .statsGrid {
