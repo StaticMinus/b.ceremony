@@ -1,0 +1,13 @@
+[
+  {
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "test@example.com",
+    "attending": "yes",
+    "guests": "0",
+    "lodging": "no",
+    "bus": "no",
+    "message": "",
+    "submittedAt": "2026-08-12T21:45:32.380Z"
+  }
+]
