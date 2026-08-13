@@ -196,7 +196,7 @@ export default function Home() {
           <FadeIn direction="up" scale blur>
             <div className={styles.biographyCardWrapper}>
               <div className={styles.biographyGrid}>
-                {/* Mosaic Image Frame */}
+                {/* Portrait Frame with Floating Pill Badge */}
                 <div className={styles.biographyMosaicContainer}>
                   <div className={styles.biographyMosaicMain}>
                     <img
@@ -206,14 +206,16 @@ export default function Home() {
                     />
                   </div>
 
-                  {/* Floating Achievement Badge */}
+                  {/* Clean Floating Achievement Pill Badge */}
                   <div className={styles.biographyMosaicBadge}>
                     <span className={styles.biographyBadgeIcon}>🏛️</span>
                     <div className={styles.biographyBadgeText}>
-                      <div>10 YEARS OF EXECUTIVE SERVICE</div>
-                      <div style={{ color: "var(--color-text-secondary)", fontSize: "0.7rem", fontWeight: "normal" }}>
+                      <span className={styles.biographyBadgeTitle}>
+                        10 YEARS OF EXECUTIVE SERVICE
+                      </span>
+                      <span className={styles.biographyBadgeSub}>
                         National Wages Commission (2009–2019)
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </div>

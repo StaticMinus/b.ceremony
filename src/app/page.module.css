@@ -242,30 +242,53 @@
 
 .biographyMosaicBadge {
   position: absolute;
-  bottom: -20px;
-  right: -10px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-accent);
-  padding: 0.75rem 1.25rem;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  z-index: 2;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 90%;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-accent);
+  padding: 0.75rem 1.4rem;
+  border-radius: 50px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  z-index: 5;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
+  backdrop-filter: blur(12px);
+  box-sizing: border-box;
 }
 
 .biographyBadgeIcon {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .biographyBadgeText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: left;
+}
+
+.biographyBadgeTitle {
   font-family: var(--font-serif);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-accent);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   line-height: 1.2;
+  white-space: nowrap;
+}
+
+.biographyBadgeSub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .biographyTextContent {
@@ -970,7 +993,7 @@
   }
 
   .biographyMosaicBadge {
-    right: 10px;
+    bottom: -20px;
   }
 
   .statsGrid {
