@@ -334,6 +334,272 @@
   line-height: 1.6;
 }
 
+/* --- Creative Parallax Gallery ----------------------------------- */
+.gallerySection {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding-block: var(--space-3xl);
+}
+
+.parallaxGallerySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.categoryTabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.categoryTabBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 30px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.categoryTabBtn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.activeCategoryTab {
+  background: var(--color-accent);
+  color: #ffffff !important;
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 14px var(--color-accent-glow);
+}
+
+.parallaxGrid3Col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.parallaxColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.parallaxCardWrapper {
+  cursor: pointer;
+  width: 100%;
+}
+
+.parallaxCardInner {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  transition: transform 300ms var(--ease-out), border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.parallaxCardWrapper:hover .parallaxCardInner {
+  transform: translateY(-6px);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.parallaxImageContainer {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+  background: #640d14;
+}
+
+.parallaxImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+}
+
+.parallaxOverlayHover {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  backdrop-filter: blur(3px);
+}
+
+.parallaxOverlayHover span {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  letter-spacing: 0.08em;
+}
+
+.parallaxCardWrapper:hover .parallaxOverlayHover {
+  opacity: 1;
+}
+
+.parallaxCardCaption {
+  padding: 1rem;
+  text-align: center;
+}
+
+.parallaxCardCaption h4 {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.parallaxCardCaption p {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.4;
+}
+
+/* Lightbox Modal */
+.lightboxBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+.lightboxContent {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-accent);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.lightboxCloseBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 200ms ease;
+}
+
+.lightboxCloseBtn:hover {
+  background: var(--color-accent);
+}
+
+.lightboxNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 200ms ease;
+}
+
+.lightboxNavBtn:hover {
+  background: var(--color-accent);
+}
+
+.lightboxNavPrev {
+  left: 15px;
+}
+
+.lightboxNavNext {
+  right: 15px;
+}
+
+.lightboxImageFrame {
+  width: 100%;
+  max-height: 65vh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lightboxMainImg {
+  max-width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+}
+
+.lightboxFooter {
+  padding: 1.25rem var(--space-xl);
+  text-align: center;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.lightboxCounter {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.lightboxTitle {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--color-text);
+  margin-bottom: 0.2rem;
+}
+
+.lightboxDesc {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
 /* --- Stats Grid -------------------------------------------------- */
 .statsGrid {
   display: grid;
@@ -519,54 +785,6 @@
 .timelineRow:hover .timelineNodeDot {
   transform: scale(1.3);
   background: var(--color-accent);
-}
-
-/* --- Photo Gallery ----------------------------------------------- */
-.gallerySection {
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
-}
-
-.galleryCard {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  transition: transform 200ms var(--ease-out), border-color 200ms ease;
-}
-
-.galleryCard:hover {
-  transform: translateY(-4px);
-  border-color: var(--color-accent);
-}
-
-.galleryImagePlaceholder {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-accent-soft) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.galleryCaption {
-  padding: 0.85rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  text-align: center;
 }
 
 /* --- Burial Schedule --------------------------------------------- */
@@ -759,7 +977,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .galleryGrid {
+  .parallaxGrid3Col {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -809,7 +1027,7 @@
     padding: 1.25rem 1rem;
   }
 
-  .galleryGrid {
+  .parallaxGrid3Col {
     grid-template-columns: 1fr;
   }
 

@@ -5,10 +5,10 @@ import styles from "./page.module.css";
 import FadeIn from "./components/FadeIn";
 import TextReveal from "./components/TextReveal";
 import AnimatedCounter from "./components/AnimatedCounter";
-import TiltCard from "./components/TiltCard";
 import RSVPForm from "./components/RSVPForm";
 import MagneticButton from "./components/MagneticButton";
 import ScrollTimeline from "./components/ScrollTimeline";
+import ParallaxGallery from "./components/ParallaxGallery";
 
 /* 
  * TASTE-SKILL DESIGN READ:
@@ -22,59 +22,6 @@ const STATS = [
   { value: 3, suffix: "", label: "Generations Inspired" },
   { value: 40, suffix: "+", label: "Years of Service" },
   { value: 1, suffix: "", label: "Extraordinary Legacy" },
-];
-
-const GALLERY_ITEMS = [
-  {
-    src: "/portrait.jpg",
-    title: "Obanze Akoji of Ehime Mbano",
-    desc: "Principal Chieftaincy Title (plus 3 other traditional titles)",
-  },
-  {
-    src: "/corporate_portrait_hd.jpg",
-    title: "Distinguished Corporate Leadership",
-    desc: "Executive Excellence & Public Policy Statesman",
-  },
-  {
-    src: "/executive_portrait.jpg",
-    title: "Executive Chairman (2009–2019)",
-    desc: "National Salaries, Incomes and Wages Commission",
-  },
-  {
-    src: "/ksm_ceremonial.jpg",
-    title: "Knight of St. Mulumba (KSM)",
-    desc: "4th Degree Ceremonial Honor & Faith Leadership",
-  },
-  {
-    src: "/official_standing.jpg",
-    title: "Official State Duties",
-    desc: "National Public Service & Official State Ceremonies",
-  },
-  {
-    src: "/father_son_car_selfie.jpg",
-    title: "Father & Son Journey",
-    desc: "Cherished Moments with Chief Dr. Daniel Egbule",
-  },
-  {
-    src: "/family_gathering_1.jpg",
-    title: "Family Unity & Generations",
-    desc: "Surrounded by Children, Grandchildren & Loved Ones",
-  },
-  {
-    src: "/family_gathering_2.jpg",
-    title: "Family Celebration",
-    desc: "Cherished Family Moments & Generations of Joy",
-  },
-  {
-    src: "/family_father_son.jpg",
-    title: "Father & Son Fellowship",
-    desc: "Warm Fellowship with Chief Dr. Daniel Egbule",
-  },
-  {
-    src: "/family_granddaughter.jpg",
-    title: "Grandfather's Love",
-    desc: "Precious Moments with Grandchildren",
-  },
 ];
 
 const BURIAL_EVENTS = [
@@ -366,42 +313,22 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════ */}
-      {/* MEMORY & PHOTO GALLERY                                      */}
+      {/* CREATIVE PARALLAX SCROLL GALLERY                           */}
       {/* ═══════════════════════════════════════════════════════════ */}
       <section className={styles.gallerySection}>
         <div className="container-wide">
           <FadeIn>
             <div className={styles.sectionHeader}>
-              <span className="caption">Memories & Tribute</span>
+              <span className="caption">Interactive Memories</span>
               <h2 className="headline">Photo Gallery</h2>
               <p className="body text-secondary" style={{ marginTop: "0.5rem" }}>
-                Celebrating moments of family, chieftaincy, public service, and faith.
+                Experience life moments through scroll-triggered depth & interactive filters. Click any photo to expand.
               </p>
               <div className={styles.sectionDivider} />
             </div>
           </FadeIn>
 
-          <div className={styles.galleryGrid}>
-            {GALLERY_ITEMS.map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.08} scale>
-                <TiltCard className={styles.galleryCard} maxTilt={5}>
-                  <div className={styles.galleryImagePlaceholder} style={{ background: "#640d14", padding: 0, height: "240px" }}>
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 20%" }}
-                    />
-                  </div>
-                  <div className={styles.galleryCaption}>
-                    <strong style={{ color: "var(--color-text)", display: "block" }}>{item.title}</strong>
-                    <div style={{ fontSize: "0.8rem", color: "var(--color-text-tertiary)", marginTop: "0.2rem" }}>
-                      {item.desc}
-                    </div>
-                  </div>
-                </TiltCard>
-              </FadeIn>
-            ))}
-          </div>
+          <ParallaxGallery />
         </div>
       </section>
 
