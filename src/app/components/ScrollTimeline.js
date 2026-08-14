@@ -20,10 +20,10 @@ const TIMELINE_DATA = [
     icon: "🎓",
   },
   {
-    year: "1978 – 1992",
+    year: "1978 – 2009",
     title: "Federal Public Service Genesis & NSIWC Service",
-    subtitle: "Public Sector Architecture",
-    desc: "Joined Federal Public Service in 1978 on Grade Level 08. In 1992, became a pioneer senior officer of the National Salaries, Incomes and Wages Commission (NSIWC), formulating its structural architecture and organogram.",
+    subtitle: "Public Sector Architecture & Commission Leadership",
+    desc: "Joined Federal Public Service in 1978 on Grade Level 08. In 1992, became a pioneer senior officer of the National Salaries, Incomes and Wages Commission (NSIWC), formulating its structural architecture and organogram ending as the Secretary to the Commission where he retired in 2009.",
     icon: "🏛️",
   },
   {
@@ -32,13 +32,6 @@ const TIMELINE_DATA = [
     subtitle: "UNILAG M.Sc. · Ph.D. · FNIM",
     desc: "Earned M.Sc. in Industrial Relations & Personnel Management (UNILAG 1990) and Ph.D. in Management (2010). Conferred as Fellow of the Nigerian Institute of Management (FNIM) and Member of the Order of the Federal Republic (MFR).",
     icon: "📚",
-  },
-  {
-    year: "2007 – 2009",
-    title: "Secretary to the Commission (NSIWC)",
-    subtitle: "Executive Commission Leadership",
-    desc: "Served as Secretary to the National Salaries, Incomes and Wages Commission from 2007 to 2009 (equivalent to Federal Permanent Secretary) before becoming Executive Chairman.",
-    icon: "📋",
   },
   {
     year: "2009 – 2019",

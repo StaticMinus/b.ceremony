@@ -94,7 +94,7 @@ const DOSSIER_SECTIONS = [
           In <strong>1992</strong>, he became a pioneer senior officer of the <strong>National Salaries, Incomes and Wages Commission (NSIWC)</strong>. Collaborating with pioneer Secretary Chief A. O. Okafor, he single-handedly formulated the structural architecture, organogram, and manning levels without retaining external consultants.
         </p>
         <p className={styles.dossierBodyText}>
-          Served successively as Acting Head of Compensation Department, Deputy Director (1999), Director of Compensation (Jan 2004), and <strong>Secretary to the Commission (2007 to 2009)</strong>, before his landmark appointment by the President, Commander-in-Chief of the Armed Forces, as:
+          Served successively as Acting Head of Compensation Department, Deputy Director (1999), Director of Compensation (Jan 2004), ending as the <strong>Secretary to the Commission where he retired in 2009</strong>, before his landmark appointment by the President, Commander-in-Chief of the Armed Forces, as:
         </p>
 
         <div className={styles.dossierHighlightBox}>
