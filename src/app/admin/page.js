@@ -368,7 +368,6 @@ export default function AdminPage() {
                     <th>Bus</th>
                     <th>Tribute / Message</th>
                     <th>Submitted</th>
-                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -411,23 +410,6 @@ export default function AdminPage() {
                         <td style={{ fontSize: "0.78rem", color: "var(--color-text-tertiary)" }}>
                           {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—"}
                         </td>
-                        <td>
-                          <button
-                            onClick={(e) => handleDeleteAttendee(item, e)}
-                            style={{
-                              background: "rgba(220, 38, 38, 0.1)",
-                              color: "#DC2626",
-                              border: "1px solid rgba(220, 38, 38, 0.3)",
-                              padding: "0.3rem 0.65rem",
-                              borderRadius: "6px",
-                              fontSize: "0.75rem",
-                              cursor: "pointer",
-                              fontWeight: "600",
-                            }}
-                          >
-                            🗑️ Delete
-                          </button>
-                        </td>
                       </tr>
                     );
                   })}
@@ -454,24 +436,10 @@ export default function AdminPage() {
                           📞 {item.phone || "No phone provided"}
                         </div>
                       </div>
-                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <div>
                         <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
                           {isAttending ? "ATTENDING" : "DECLINED"}
                         </span>
-                        <button
-                          onClick={(e) => handleDeleteAttendee(item, e)}
-                          style={{
-                            background: "rgba(220, 38, 38, 0.1)",
-                            color: "#DC2626",
-                            border: "1px solid rgba(220, 38, 38, 0.3)",
-                            padding: "0.3rem 0.5rem",
-                            borderRadius: "6px",
-                            fontSize: "0.72rem",
-                            cursor: "pointer",
-                          }}
-                        >
-                          🗑️
-                        </button>
                       </div>
                     </div>
 
@@ -580,22 +548,7 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <button
-                  onClick={() => handleDeleteAttendee(selectedAttendee)}
-                  style={{
-                    background: "rgba(220, 38, 38, 0.1)",
-                    color: "#DC2626",
-                    border: "1px solid rgba(220, 38, 38, 0.3)",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "6px",
-                    fontSize: "0.82rem",
-                    cursor: "pointer",
-                    fontWeight: "600",
-                  }}
-                >
-                  🗑️ Delete Record
-                </button>
+              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "flex-end" }}>
                 <button onClick={() => setSelectedAttendee(null)} className="btn btn-secondary">
                   Close Detail View
                 </button>
