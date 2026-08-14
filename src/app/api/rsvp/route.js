@@ -15,11 +15,18 @@ export async function POST(request) {
       lodging,
       bus,
       message,
-    } = body;
+    } = body || {};
 
-    if (!firstName || !lastName) {
+    if (!firstName || !firstName.trim() || !lastName || !lastName.trim()) {
       return NextResponse.json(
         { error: "First name and last name are required." },
+        { status: 400 }
+      );
+    }
+
+    if (!phone || !phone.trim()) {
+      return NextResponse.json(
+        { error: "Phone number is required." },
         { status: 400 }
       );
     }
@@ -31,7 +38,7 @@ export async function POST(request) {
       email: (email || "").trim(),
       phone: (phone || "").trim(),
       attending: attending || "yes",
-      guests: guests || "0",
+      guests: String(guests || "0"),
       lodging: lodging || "no",
       bus: bus || "no",
       message: (message || "").trim(),
@@ -44,7 +51,7 @@ export async function POST(request) {
   } catch (err) {
     console.error("RSVP submission error:", err);
     return NextResponse.json(
-      { error: "Failed to process RSVP submission." },
+      { error: "Failed to process RSVP submission. Please try again." },
       { status: 500 }
     );
   }
@@ -61,6 +68,7 @@ export async function GET(request) {
       const headers = [
         "First Name",
         "Last Name",
+        "Email",
         "Phone / WhatsApp",
         "Attending",
         "Guests",
@@ -73,6 +81,7 @@ export async function GET(request) {
       const rows = attendees.map((a) => [
         `"${a.firstName || ""}"`,
         `"${a.lastName || ""}"`,
+        `"${a.email || ""}"`,
         `"${a.phone || ""}"`,
         `"${a.attending || ""}"`,
         `"${a.guests || ""}"`,
