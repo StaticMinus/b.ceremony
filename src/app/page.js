@@ -9,11 +9,12 @@ import RSVPForm from "./components/RSVPForm";
 import MagneticButton from "./components/MagneticButton";
 import ScrollTimeline from "./components/ScrollTimeline";
 import ParallaxGallery from "./components/ParallaxGallery";
+import ExtendedDossier from "./components/ExtendedDossier";
 
 /* 
  * TASTE-SKILL DESIGN READ:
- * "Regal Editorial Memorial and Celebration of Life for High Chief Sir Richard O. Egbule
- * (KSM, PHD, FNIM, MFR, NPOM), Obanze Akoji of Ehime Mbano. Clean parchment light mode default with dark mode toggle,
+ * "Regal Editorial Memorial and Celebration of Life for High Chief Richard Onwuka Egbule
+ * (PhD, MFR, FNIM, KSM), Obanze Akoji of Ehime Mbano. Clean parchment light mode default with dark mode toggle,
  * Cinzel typography, uncropped portrait presentation, and zero scroll gaps."
  */
 
@@ -109,7 +110,7 @@ export default function Home() {
                 <div className={styles.heroPortraitInner}>
                   <img
                     src="/portrait.jpg"
-                    alt="High Chief Sir Richard O. Egbule"
+                    alt="High Chief Richard Onwuka Egbule"
                     className={styles.heroPortraitImg}
                   />
                 </div>
@@ -131,12 +132,12 @@ export default function Home() {
               delay={0.25}
               stagger={0.05}
             >
-              HIGH CHIEF (SIR) RICHARD O. EGBULE
+              HIGH CHIEF RICHARD ONWUKA EGBULE
             </TextReveal>
 
             <FadeIn delay={0.55}>
               <p className={styles.heroHonours}>
-                (KSM, PHD, FNIM, MFR, NPOM)
+                (PhD, MFR, FNIM, KSM)
               </p>
             </FadeIn>
 
@@ -160,11 +161,11 @@ export default function Home() {
 
             <FadeIn delay={1.1}>
               <div className={styles.heroActions}>
-                <a href="#programme" className="btn btn-primary">
-                  Burial Programme
+                <a href="#citation" className="btn btn-primary">
+                  Official Citation
                 </a>
-                <a href="#rsvp" className="btn btn-secondary">
-                  Confirm RSVP & Travel
+                <a href="#programme" className="btn btn-secondary">
+                  Burial Programme
                 </a>
               </div>
             </FadeIn>
@@ -179,10 +180,10 @@ export default function Home() {
         <div className="container">
           <FadeIn direction="up">
             <p className={styles.quoteBannerText}>
-              &ldquo;A lifetime of humanitarian philanthropy will forever remain his indelible legacy. We miss you dearly, Dad&rdquo;
+              &ldquo;A great family man, a father every child would wish to have, a grandfather and above all, a Philanthropist who drops his food to give attention to a beggar&apos;s knock.&rdquo;
             </p>
             <p className={`caption text-accent ${styles.quoteBannerAuthor}`}>
-              — The Egbule Family
+              — The Egbule Family Tribute
             </p>
           </FadeIn>
         </div>
@@ -201,7 +202,7 @@ export default function Home() {
                   <div className={styles.biographyMosaicMain}>
                     <img
                       src="/executive_portrait.jpg"
-                      alt="High Chief Sir Richard O. Egbule Executive Portrait"
+                      alt="High Chief Richard Onwuka Egbule Executive Portrait"
                       className={styles.biographyImgMain}
                     />
                   </div>
@@ -214,7 +215,7 @@ export default function Home() {
                         10 YEARS OF EXECUTIVE SERVICE
                       </span>
                       <span className={styles.biographyBadgeSub}>
-                        National Wages Commission (2009–2019)
+                        National Salaries, Incomes and Wages Commission (2009–2019)
                       </span>
                     </div>
                   </div>
@@ -229,26 +230,26 @@ export default function Home() {
                   </h2>
 
                   <p className={styles.biographySubhead}>
-                    High Chief (Sir) Richard O. Egbule <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>(KSM, PHD, FNIM, MFR, NPOM)</span>
+                    High Chief Richard Onwuka Egbule <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>(PhD, MFR, FNIM, KSM)</span>
                   </p>
 
                   <div className={styles.biographyFeatureGrid}>
                     <div className={styles.biographyFeatureItem}>
                       <div className={styles.biographyFeatureIcon}>📜</div>
                       <div className={styles.biographyFeatureText}>
-                        <h4>Public Sector Governance & Reform</h4>
+                        <h4>Public Sector Governance & Wage Policy</h4>
                         <p>
-                          Served as the <strong>Executive Chairman of the National Salaries, Incomes and Wages Commission from 2009 to 2019</strong>, shaping national wage policy, public sector compensation standards, and institutional equity across Nigeria.
+                          Served 10 years as <strong>Executive Chairman of the National Salaries, Incomes and Wages Commission (2009–2019)</strong>, formulating national wage structures (HAPSS, HATISS, HAFSS) and leading presidential minimum wage committees.
                         </p>
                       </div>
                     </div>
 
                     <div className={styles.biographyFeatureItem}>
-                      <div className={styles.biographyFeatureIcon}>🎖️</div>
+                      <div className={styles.biographyFeatureIcon}>🎓</div>
                       <div className={styles.biographyFeatureText}>
-                        <h4>National & Faith Honors</h4>
+                        <h4>Academic Mastery & Professional Honours</h4>
                         <p>
-                          Conferred with Member of the Order of the Federal Republic (<strong>MFR</strong>) and National Productivity Order of Merit (<strong>NPOM</strong>). A Fellow of the Nigerian Institute of Management (<strong>FNIM</strong>), 4th Degree Knight of St. Mulumba (<strong>KSM</strong>), and holder of a Doctorate Degree (<strong>PhD</strong>).
+                          B.Sc. Hons in Economics (UNN 1978, 2nd Class Upper), M.Sc. (UNILAG 1990), and Ph.D. in Management (2010). Conferred as Member of the Order of the Federal Republic (<strong>MFR</strong>) and Fellow of the Nigerian Institute of Management (<strong>FNIM</strong>).
                         </p>
                       </div>
                     </div>
@@ -256,9 +257,9 @@ export default function Home() {
                     <div className={styles.biographyFeatureItem}>
                       <div className={styles.biographyFeatureIcon}>👑</div>
                       <div className={styles.biographyFeatureText}>
-                        <h4>Traditional Leadership & Philanthropy</h4>
+                        <h4>Traditional Leadership & Youth Empowerment</h4>
                         <p>
-                          In addition to his principal traditional title as the <strong>Obanze Akoji of Ehime Mbano</strong>, he was honored with <strong>three other traditional chieftaincy titles</strong> in recognition of his vast humanitarian philanthropy and community service.
+                          Installed as <strong>Obanze Akoji of Ehime Mbano</strong> alongside four other traditional chieftaincy titles. Devoted over 40 years to mentoring and placing hundreds of youths across federal ministries and defense forces.
                         </p>
                       </div>
                     </div>
@@ -269,6 +270,11 @@ export default function Home() {
           </FadeIn>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* OFFICIAL EXTENDED DOSSIER                                  */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <ExtendedDossier />
 
       {/* ═══════════════════════════════════════════════════════════ */}
       {/* STATS & IMPACT                                             */}
