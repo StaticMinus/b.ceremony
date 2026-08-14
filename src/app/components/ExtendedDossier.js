@@ -29,8 +29,8 @@ const DOSSIER_SECTIONS = [
           </div>
           <div className={styles.dossierInfoCard}>
             <span className={styles.dossierInfoTag}>FAMILY LEGACY</span>
-            <h4>Father to 4 Children</h4>
-            <p>Foster Father to 1</p>
+            <h4>Devoted Family Patriarch</h4>
+            <p>Father to 4 Children · Foster Father to 1 · Father-in-law to 4 · 15 Grandchildren · Brother, Uncle, Mentor & Friend to many</p>
           </div>
         </div>
       </div>

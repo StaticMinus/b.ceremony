@@ -51,7 +51,7 @@ const TIMELINE_DATA = [
     year: "Family Legacy",
     title: "Family Legacy",
     subtitle: "Devoted Family Patriarch",
-    desc: "Father to 4 Children — Foster Father to 1.",
+    desc: "Father to 4 Children · Foster Father to 1 · Father-in-law to 4 · 15 Grandchildren · Brother, Uncle, Mentor, & Friend to many.",
     icon: "👨‍👩‍👧‍👦",
   },
 ];
