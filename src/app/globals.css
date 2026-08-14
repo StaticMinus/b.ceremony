@@ -298,12 +298,12 @@ section {
 
 /* --- Theme Toggle Button ----------------------------------------- */
 .theme-toggle {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 1000;
-  width: 46px;
-  height: 46px;
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: 100;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid var(--color-border);
   background: var(--material-thick);
@@ -315,6 +315,7 @@ section {
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: transform 160ms var(--ease-out), border-color 200ms ease;
+  flex-shrink: 0;
 }
 
 .theme-toggle:hover {

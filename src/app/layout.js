@@ -15,7 +15,6 @@ export default function RootLayout({ children }) {
       <body>
         <ScrollProgress />
         <CustomCursor />
-        <ThemeToggle />
         {children}
       </body>
     </html>
