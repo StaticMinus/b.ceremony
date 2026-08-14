@@ -1,20 +1,11 @@
+import { prisma } from "./prisma.js";
 import { promises as fs } from "fs";
 import path from "path";
 
-// Choose file path (uses /tmp on Vercel serverless environment if process.cwd() is read-only)
-const IS_VERCEL = !!process.env.VERCEL;
-const DATA_DIR = IS_VERCEL ? "/tmp" : path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "attendees.json");
-
-// Upstash Redis / Vercel KV Env Var Support
-const KV_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-
-// In-memory fallback for serverless execution lifecycle
-let memoryStore = [];
+const DATA_FILE = path.join(process.cwd(), "data", "attendees.json");
 
 /**
- * Helper to deduplicate array of attendee objects
+ * Deduplicate attendee list helper
  */
 function deduplicateAttendees(list) {
   const seen = new Set();
@@ -32,123 +23,193 @@ function deduplicateAttendees(list) {
 }
 
 /**
- * Ensure data directory and storage file exist
+ * Helper to auto-migrate existing legacy attendees.json into database if DB is empty
  */
-async function ensureStorage() {
+async function autoMigrateLegacyJson() {
   try {
-    await fs.access(DATA_DIR);
-  } catch {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-  }
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, "[]", "utf-8");
-  }
-}
-
-/**
- * Fetch all attendees (supports Upstash Redis / Vercel KV if env vars exist, otherwise falls back to filesystem / memory)
- */
-export async function getAttendees() {
-  // 1. Upstash Redis / Vercel KV Integration (if configured on Vercel)
-  if (KV_URL && KV_TOKEN) {
-    try {
-      const res = await fetch(`${KV_URL}/get/attendees`, {
-        headers: {
-          Authorization: `Bearer ${KV_TOKEN}`,
-        },
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.result) {
-          const parsed = typeof json.result === "string" ? JSON.parse(json.result) : json.result;
-          const clean = deduplicateAttendees(Array.isArray(parsed) ? parsed : []);
-          memoryStore = clean;
-          return clean;
-        }
-      }
-    } catch (err) {
-      console.warn("Vercel KV / Upstash fetch failed, using fallback storage:", err);
-    }
-  }
-
-  // 2. Local Filesystem / Serverless /tmp Storage
-  try {
-    await ensureStorage();
     const raw = await fs.readFile(DATA_FILE, "utf-8");
     const parsed = JSON.parse(raw);
-    const clean = deduplicateAttendees(Array.isArray(parsed) ? parsed : []);
-    memoryStore = clean;
-    return clean;
-  } catch {
-    return memoryStore;
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      console.log(`Auto-migrating ${parsed.length} legacy entries from attendees.json to database...`);
+      for (const entry of parsed) {
+        if (!entry.firstName || !entry.lastName || !entry.phone) continue;
+        await prisma.attendee.upsert({
+          where: { id: entry.id || `legacy_${Date.now()}_${Math.random().toString(36).substr(2, 4)}` },
+          update: {},
+          create: {
+            id: entry.id || `rsvp_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+            firstName: String(entry.firstName).trim(),
+            lastName: String(entry.lastName).trim(),
+            email: entry.email ? String(entry.email).trim() : null,
+            phone: String(entry.phone).trim(),
+            attending: String(entry.attending || "yes"),
+            guests: String(entry.guests || "0"),
+            lodging: String(entry.lodging || "no"),
+            bus: String(entry.bus || "no"),
+            message: entry.message ? String(entry.message).trim() : null,
+            submittedAt: entry.submittedAt ? new Date(entry.submittedAt) : new Date(),
+          },
+        });
+      }
+    }
+  } catch (err) {
+    // If file doesn't exist or migration fails, continue cleanly
+    console.warn("Legacy JSON migration notice:", err.message);
   }
 }
 
 /**
- * Save updated attendee list to persistent storage
+ * Fetch all attendees from Database
  */
-async function persistAttendees(updatedList) {
-  const cleanList = deduplicateAttendees(updatedList);
+export async function getAttendees() {
+  try {
+    let records = await prisma.attendee.findMany({
+      orderBy: { submittedAt: "desc" },
+    });
 
-  // 1. Vercel KV / Upstash Redis (Persistent Production Database on Vercel)
-  if (KV_URL && KV_TOKEN) {
-    try {
-      await fetch(`${KV_URL}/set/attendees`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${KV_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(JSON.stringify(cleanList)),
+    // Auto-seed/migrate from attendees.json if database is currently empty
+    if (records.length === 0) {
+      await autoMigrateLegacyJson();
+      records = await prisma.attendee.findMany({
+        orderBy: { submittedAt: "desc" },
       });
-    } catch (err) {
-      console.warn("Vercel KV / Upstash save error:", err);
+    }
+
+    const formatted = records.map((r) => ({
+      id: r.id,
+      firstName: r.firstName,
+      lastName: r.lastName,
+      email: r.email || "",
+      phone: r.phone,
+      attending: r.attending,
+      guests: r.guests,
+      lodging: r.lodging,
+      bus: r.bus,
+      message: r.message || "",
+      submittedAt: r.submittedAt ? r.submittedAt.toISOString() : new Date().toISOString(),
+    }));
+
+    return deduplicateAttendees(formatted);
+  } catch (err) {
+    console.error("Database fetch error in getAttendees:", err);
+    // Fallback: Attempt filesystem read if DB connection fails
+    try {
+      const raw = await fs.readFile(DATA_FILE, "utf-8");
+      return deduplicateAttendees(JSON.parse(raw));
+    } catch {
+      return [];
     }
   }
-
-  // 2. Local Filesystem / /tmp File Save
-  try {
-    await ensureStorage();
-    await fs.writeFile(DATA_FILE, JSON.stringify(cleanList, null, 2), "utf-8");
-  } catch (err) {
-    console.warn("Filesystem write error (using memory store):", err);
-  }
-
-  memoryStore = cleanList;
-  return cleanList;
 }
 
 /**
- * Add a single new RSVP entry
+ * Save a single new attendee RSVP response to Database
  */
 export async function saveAttendee(entry) {
-  const current = await getAttendees();
-  const updated = [entry, ...current];
+  try {
+    const entryId = entry.id || `rsvp_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
 
-  // Webhook Notification (e.g. Zapier / Make / Formspree / Google Sheet / Slack)
-  if (process.env.RSVP_WEBHOOK_URL) {
-    try {
-      await fetch(process.env.RSVP_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(entry),
-      });
-    } catch (err) {
-      console.warn("RSVP Webhook notification failed:", err);
+    await prisma.attendee.upsert({
+      where: { id: entryId },
+      update: {
+        firstName: String(entry.firstName).trim(),
+        lastName: String(entry.lastName).trim(),
+        email: entry.email ? String(entry.email).trim() : null,
+        phone: String(entry.phone).trim(),
+        attending: String(entry.attending || "yes"),
+        guests: String(entry.guests || "0"),
+        lodging: String(entry.lodging || "no"),
+        bus: String(entry.bus || "no"),
+        message: entry.message ? String(entry.message).trim() : null,
+        submittedAt: entry.submittedAt ? new Date(entry.submittedAt) : new Date(),
+      },
+      create: {
+        id: entryId,
+        firstName: String(entry.firstName).trim(),
+        lastName: String(entry.lastName).trim(),
+        email: entry.email ? String(entry.email).trim() : null,
+        phone: String(entry.phone).trim(),
+        attending: String(entry.attending || "yes"),
+        guests: String(entry.guests || "0"),
+        lodging: String(entry.lodging || "no"),
+        bus: String(entry.bus || "no"),
+        message: entry.message ? String(entry.message).trim() : null,
+        submittedAt: entry.submittedAt ? new Date(entry.submittedAt) : new Date(),
+      },
+    });
+
+    // Optional Webhook Notification
+    if (process.env.RSVP_WEBHOOK_URL) {
+      try {
+        await fetch(process.env.RSVP_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(entry),
+        });
+      } catch (err) {
+        console.warn("RSVP Webhook notification error:", err);
+      }
     }
-  }
 
-  return await persistAttendees(updated);
+    return await getAttendees();
+  } catch (err) {
+    console.error("Database save error in saveAttendee:", err);
+    throw err;
+  }
 }
 
 /**
- * Bulk save or sync multiple attendee entries (for restoring/merging client backups)
+ * Bulk save / sync multiple attendee records into Database
  */
 export async function saveMultipleAttendees(entries) {
-  const current = await getAttendees();
-  const merged = [...entries, ...current];
-  return await persistAttendees(merged);
+  if (!Array.isArray(entries)) return await getAttendees();
+
+  try {
+    for (const entry of entries) {
+      if (!entry.firstName || !entry.lastName || !entry.phone) continue;
+      const entryId = entry.id || `rsvp_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+
+      await prisma.attendee.upsert({
+        where: { id: entryId },
+        update: {
+          firstName: String(entry.firstName).trim(),
+          lastName: String(entry.lastName).trim(),
+          email: entry.email ? String(entry.email).trim() : null,
+          phone: String(entry.phone).trim(),
+          attending: String(entry.attending || "yes"),
+          guests: String(entry.guests || "0"),
+          lodging: String(entry.lodging || "no"),
+          bus: String(entry.bus || "no"),
+          message: entry.message ? String(entry.message).trim() : null,
+          submittedAt: entry.submittedAt ? new Date(entry.submittedAt) : new Date(),
+        },
+        create: {
+          id: entryId,
+          firstName: String(entry.firstName).trim(),
+          lastName: String(entry.lastName).trim(),
+          email: entry.email ? String(entry.email).trim() : null,
+          phone: String(entry.phone).trim(),
+          attending: String(entry.attending || "yes"),
+          guests: String(entry.guests || "0"),
+          lodging: String(entry.lodging || "no"),
+          bus: String(entry.bus || "no"),
+          message: entry.message ? String(entry.message).trim() : null,
+          submittedAt: entry.submittedAt ? new Date(entry.submittedAt) : new Date(),
+        },
+      });
+    }
+    return await getAttendees();
+  } catch (err) {
+    console.error("Database bulk save error:", err);
+    throw err;
+  }
+}
+
+/**
+ * Fetch tributes (attendees who provided condolence messages)
+ */
+export async function getTributes() {
+  const all = await getAttendees();
+  return all.filter((item) => item.message && item.message.trim().length > 0);
 }

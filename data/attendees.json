@@ -1,5 +1,18 @@
 [
   {
+    "id": "rsvp_1786716671878_lucia",
+    "firstName": "Lucia",
+    "lastName": "Okpo",
+    "email": "okpolucia@gmail.com",
+    "phone": "+2348168065188",
+    "attending": "yes",
+    "guests": "0",
+    "lodging": "no",
+    "bus": "yes",
+    "message": "",
+    "submittedAt": "2026-08-14T14:09:36.648Z"
+  },
+  {
     "id": "rsvp_1786719381531_0ly6",
     "firstName": "Emeka",
     "lastName": "Egbule",
@@ -26,9 +39,11 @@
     "submittedAt": "2026-08-12T22:46:53.341Z"
   },
   {
+    "id": "rsvp_1786571132380_test",
     "firstName": "Test",
     "lastName": "User",
     "email": "test@example.com",
+    "phone": "+2348000000000",
     "attending": "yes",
     "guests": "0",
     "lodging": "no",

@@ -1,0 +1,25 @@
+// Prisma schema for Obituary & Memorial RSVP app (PostgreSQL & SQLite compatible)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Attendee {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String
+  attending   String   @default("yes")
+  guests      String   @default("0")
+  lodging     String   @default("no")
+  bus         String   @default("no")
+  message     String?
+  submittedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+}

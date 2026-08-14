@@ -13,6 +13,7 @@ import ExtendedDossier from "./components/ExtendedDossier";
 import FuneralSupport from "./components/FuneralSupport";
 import Header from "./components/Header";
 import BackgroundMesh from "./components/BackgroundMesh";
+import TributesWall from "./components/TributesWall";
 
 /* 
  * TASTE-SKILL DESIGN READ:
@@ -405,6 +406,19 @@ export default function Home() {
                 Kindly confirm your attendance to help the family arrange logistics, transport, and lodging.
               </p>
               <div className={styles.sectionDivider} />
+            </div>
+          </FadeIn>
+
+          {/* Tributes & Condolences Wall */}
+          <FadeIn delay={0.1}>
+            <div style={{ marginBottom: "2.5rem" }}>
+              <h3 className="title" style={{ fontSize: "1.35rem", marginBottom: "0.5rem", color: "var(--color-accent)" }}>
+                🕊️ Tributes & Messages of Condolence
+              </h3>
+              <p style={{ fontSize: "0.9rem", color: "var(--color-text-secondary)", marginBottom: "1.25rem" }}>
+                Messages left by well-wishers, friends, and family attending the burial services.
+              </p>
+              <TributesWall />
             </div>
           </FadeIn>
 

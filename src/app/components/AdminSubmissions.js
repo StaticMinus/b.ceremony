@@ -184,7 +184,7 @@ export default function AdminSubmissions() {
                 <div>
                   <h3 className="title">Attendee Responses ({attendees.length})</h3>
                   <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
-                    Real-time attendee list backed up in browser & server storage
+                    Real-time attendee list backed up in Database & browser cache
                   </p>
                 </div>
                 <button

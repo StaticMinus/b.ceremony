@@ -56,6 +56,10 @@ export default function RSVPForm() {
         }
       }
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("rsvpSubmitted", { detail: data.entry }));
+      }
+
       setSubmittedName(`${form.firstName} ${form.lastName}`);
       setSubmitted(true);
       setForm(initialForm);
