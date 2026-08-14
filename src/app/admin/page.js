@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import styles from "../page.module.css";
+import { motion, AnimatePresence } from "framer-motion";
+import styles from "./admin.module.css";
 
 export default function AdminPage() {
   const [attendees, setAttendees] = useState([]);
@@ -11,6 +12,7 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [filterAttending, setFilterAttending] = useState("all");
   const [syncStatus, setSyncStatus] = useState("");
+  const [selectedAttendee, setSelectedAttendee] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -49,7 +51,7 @@ export default function AdminPage() {
     setSyncStatus("");
 
     try {
-      // 1. Fetch Server Data
+      // 1. Fetch Server Data from Database API
       const res = await fetch("/api/rsvp");
       let serverData = [];
       if (res.ok) {
@@ -69,9 +71,9 @@ export default function AdminPage() {
       // 3. Merge Server & Local Storage Records
       const { merged, missingOnServer } = mergeRecords(serverData, localData);
 
-      // 4. Auto-Sync Missing Local Records back to Server
+      // 4. Auto-Sync Missing Local Records back to Server Database
       if (missingOnServer.length > 0) {
-        setSyncStatus(`Auto-syncing ${missingOnServer.length} record(s) to server...`);
+        setSyncStatus(`Auto-syncing ${missingOnServer.length} record(s) to database...`);
         try {
           await fetch("/api/rsvp", {
             method: "POST",
@@ -91,7 +93,6 @@ export default function AdminPage() {
       setAttendees(merged);
     } catch (err) {
       console.error("Fetch submissions error:", err);
-      // Fallback to local storage if network or server fails
       if (typeof window !== "undefined") {
         const localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
         setAttendees(localData);
@@ -154,22 +155,22 @@ export default function AdminPage() {
 
   /* Filtering */
   const filtered = attendees.filter((item) => {
-    const nameMatch = `${item.firstName || ""} ${item.lastName || ""} ${item.phone || ""}`
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const searchTarget = `${item.firstName || ""} ${item.lastName || ""} ${item.phone || ""} ${item.email || ""}`.toLowerCase();
+    const nameMatch = searchTarget.includes(search.toLowerCase());
 
     if (filterAttending === "all") return nameMatch;
     if (filterAttending === "yes") return nameMatch && item.attending === "yes";
     if (filterAttending === "no") return nameMatch && item.attending === "no";
     if (filterAttending === "lodging") return nameMatch && item.lodging === "yes";
     if (filterAttending === "bus") return nameMatch && item.bus === "yes";
+    if (filterAttending === "tribute") return nameMatch && item.message && item.message.trim().length > 0;
 
     return nameMatch;
   });
 
-  /* Calculate Summary Metrics */
+  /* Summary Metrics */
   const totalAttending = attendees.filter((a) => a.attending === "yes").length;
-  const totalGuestsCount = attendees.reduce((acc, curr) => {
+  const totalHeadcount = attendees.reduce((acc, curr) => {
     if (curr.attending === "yes") {
       const num = parseInt(curr.guests, 10) || 0;
       return acc + 1 + num;
@@ -178,43 +179,39 @@ export default function AdminPage() {
   }, 0);
   const totalLodging = attendees.filter((a) => a.lodging === "yes").length;
   const totalBus = attendees.filter((a) => a.bus === "yes").length;
+  const totalTributes = attendees.filter((a) => a.message && a.message.trim().length > 0).length;
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-bg)", padding: "2rem 1rem" }}>
+    <div className={styles.adminWrapper}>
       <div className="container-wide">
         {/* Top Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <Link href="/" style={{ color: "var(--color-accent)", textDecoration: "none", fontSize: "0.9rem", fontWeight: "600", letterSpacing: "0.05em" }}>
+        <div className={styles.adminHeader}>
+          <div className={styles.adminHeaderInfo}>
+            <Link href="/" className={styles.backLink}>
               ← Return to Memorial Site
             </Link>
-            <h1 className="headline" style={{ marginTop: "0.5rem" }}>
-              RSVP Admin Dashboard
-            </h1>
-            <p className="body text-secondary">
+            <h1 className={styles.adminTitle}>RSVP Admin Dashboard</h1>
+            <p className={styles.adminSubtitle}>
               High Chief Sir Dr. Richard O. Egbule Burial Ceremony Submissions
             </p>
             {syncStatus && (
-              <p style={{ fontSize: "0.8rem", color: "#16a34a", marginTop: "0.25rem", fontWeight: "600" }}>
+              <p style={{ fontSize: "0.82rem", color: "#16a34a", marginTop: "0.4rem", fontWeight: "600" }}>
                 ✓ {syncStatus}
               </p>
             )}
           </div>
 
-          <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
-            <button onClick={fetchAndSyncSubmissions} className="btn btn-secondary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+          <div className={styles.adminActions}>
+            <button onClick={fetchAndSyncSubmissions} className={`btn btn-secondary ${styles.adminBtn}`}>
               🔄 Refresh & Sync
             </button>
-
-            <button onClick={downloadCSV} className="btn btn-primary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+            <button onClick={downloadCSV} className={`btn btn-primary ${styles.adminBtn}`}>
               📥 Download CSV
             </button>
-
-            <button onClick={exportJSONBackup} className="btn btn-secondary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+            <button onClick={exportJSONBackup} className={`btn btn-secondary ${styles.adminBtn}`}>
               💾 Backup JSON
             </button>
-
-            <button onClick={() => fileInputRef.current?.click()} className="btn btn-secondary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+            <button onClick={() => fileInputRef.current?.click()} className={`btn btn-secondary ${styles.adminBtn}`}>
               📤 Import Backup
             </button>
             <input
@@ -227,143 +224,270 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Metrics Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-          <div className={styles.biographyCard} style={{ padding: "1.25rem", textAlign: "center" }}>
-            <span className="caption">Total Submissions</span>
-            <h3 className="title" style={{ fontSize: "2rem", color: "var(--color-accent)", marginTop: "0.2rem" }}>
-              {attendees.length}
-            </h3>
+        {/* Responsive KPI Metrics Grid */}
+        <div className={styles.metricsGrid}>
+          <div className={styles.metricCard}>
+            <span className={styles.metricLabel}>Total Submissions</span>
+            <div className={styles.metricValue}>{attendees.length}</div>
           </div>
-          <div className={styles.biographyCard} style={{ padding: "1.25rem", textAlign: "center" }}>
-            <span className="caption">Confirmed Attending</span>
-            <h3 className="title" style={{ fontSize: "2rem", color: "var(--color-accent)", marginTop: "0.2rem" }}>
-              {totalAttending}
-            </h3>
+          <div className={styles.metricCard}>
+            <span className={styles.metricLabel}>Confirmed Attending</span>
+            <div className={styles.metricValue}>{totalAttending}</div>
           </div>
-          <div className={styles.biographyCard} style={{ padding: "1.25rem", textAlign: "center" }}>
-            <span className="caption">Total Headcount (Inc. Guests)</span>
-            <h3 className="title" style={{ fontSize: "2rem", color: "var(--color-accent)", marginTop: "0.2rem" }}>
-              {totalGuestsCount}
-            </h3>
+          <div className={styles.metricCard}>
+            <span className={styles.metricLabel}>Total Headcount</span>
+            <div className={styles.metricValue}>{totalHeadcount}</div>
           </div>
-          <div className={styles.biographyCard} style={{ padding: "1.25rem", textAlign: "center" }}>
-            <span className="caption">Lodging Needed</span>
-            <h3 className="title" style={{ fontSize: "2rem", color: "var(--color-accent)", marginTop: "0.2rem" }}>
-              {totalLodging}
-            </h3>
+          <div className={styles.metricCard}>
+            <span className={styles.metricLabel}>Lodging Needed</span>
+            <div className={styles.metricValue}>{totalLodging}</div>
           </div>
-          <div className={styles.biographyCard} style={{ padding: "1.25rem", textAlign: "center" }}>
-            <span className="caption">Bus Transport</span>
-            <h3 className="title" style={{ fontSize: "2rem", color: "var(--color-accent)", marginTop: "0.2rem" }}>
-              {totalBus}
-            </h3>
+          <div className={styles.metricCard}>
+            <span className={styles.metricLabel}>Bus Transport</span>
+            <div className={styles.metricValue}>{totalBus}</div>
           </div>
         </div>
 
-        {/* Filters & Search */}
-        <div className={`glass-card`} style={{ padding: "1.5rem", marginBottom: "2rem" }}>
-          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+        {/* Toolbar: Search & Filters */}
+        <div className={styles.toolbarCard}>
+          <div className={styles.toolbarRow}>
             <input
               type="text"
-              placeholder="Search by name or phone..."
+              placeholder="🔍 Search attendee by name, phone, or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{
-                flex: "1 1 280px",
-                padding: "0.75rem 1rem",
-                borderRadius: "var(--radius-sm)",
-                border: "1px solid var(--color-border)",
-                background: "var(--color-surface)",
-                color: "var(--color-text)",
-              }}
+              className={styles.searchInput}
             />
 
             <select
               value={filterAttending}
               onChange={(e) => setFilterAttending(e.target.value)}
-              style={{
-                padding: "0.75rem 1rem",
-                borderRadius: "var(--radius-sm)",
-                border: "1px solid var(--color-border)",
-                background: "var(--color-surface)",
-                color: "var(--color-text)",
-              }}
+              className={styles.filterSelect}
             >
-              <option value="all">All Submissions</option>
-              <option value="yes">Attending Only</option>
+              <option value="all">All Submissions ({attendees.length})</option>
+              <option value="yes">Attending Only ({totalAttending})</option>
               <option value="no">Cannot Attend</option>
-              <option value="lodging">Needs Lodging</option>
-              <option value="bus">Needs Bus Charter</option>
+              <option value="lodging">Needs Lodging ({totalLodging})</option>
+              <option value="bus">Needs Bus Transport ({totalBus})</option>
+              <option value="tribute">With Tribute Message ({totalTributes})</option>
             </select>
           </div>
         </div>
 
-        {/* Attendees Table */}
-        <div className={`glass-card`} style={{ padding: "1.5rem", overflowX: "auto" }}>
-          {loading && <p style={{ padding: "2rem", textAlign: "center" }}>Loading attendee records...</p>}
-          {error && <p style={{ padding: "2rem", textAlign: "center", color: "#DC2626" }}>{error}</p>}
+        {/* Content Loading & Error States */}
+        {loading && <p style={{ padding: "3rem", textAlign: "center", color: "var(--color-text-secondary)" }}>Loading attendee records from database...</p>}
+        {error && <p style={{ padding: "3rem", textAlign: "center", color: "#DC2626" }}>{error}</p>}
 
-          {!loading && !filtered.length && !error && (
-            <p style={{ padding: "3rem 1rem", textAlign: "center", color: "var(--color-text-secondary)" }}>
-              No matching attendee responses found.
+        {!loading && !filtered.length && !error && (
+          <div style={{ padding: "4rem 1rem", textAlign: "center", background: "var(--color-surface)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
+            <p style={{ color: "var(--color-text-secondary)", fontSize: "1.05rem" }}>
+              No attendee responses found matching your criteria.
             </p>
-          )}
+          </div>
+        )}
 
-          {!loading && filtered.length > 0 && (
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem", textAlign: "left" }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid var(--color-border)", color: "var(--color-accent)" }}>
-                  <th style={{ padding: "1rem 0.75rem" }}>Attendee Name</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Phone / WhatsApp</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Status</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Guests</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Lodging</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Bus</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Tribute / Message</th>
-                  <th style={{ padding: "1rem 0.75rem" }}>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((item, idx) => (
-                  <tr key={item.id || item.phone || idx} style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <td style={{ padding: "1rem 0.75rem", fontWeight: "600" }}>
-                      {item.firstName} {item.lastName}
-                    </td>
-                    <td style={{ padding: "1rem 0.75rem" }}>
-                      <div>{item.phone || "—"}</div>
-                      <div style={{ color: "var(--color-text-tertiary)", fontSize: "0.75rem" }}>{item.email}</div>
-                    </td>
-                    <td style={{ padding: "1rem 0.75rem" }}>
-                      <span
-                        style={{
-                          padding: "0.2rem 0.6rem",
-                          borderRadius: "12px",
-                          fontSize: "0.75rem",
-                          fontWeight: "700",
-                          background: item.attending === "yes" ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
-                          color: item.attending === "yes" ? "#10B981" : "#EF4444",
-                        }}
-                      >
-                        {(item.attending || "").toUpperCase()}
-                      </span>
-                    </td>
-                    <td style={{ padding: "1rem 0.75rem" }}>{item.guests}</td>
-                    <td style={{ padding: "1rem 0.75rem" }}>{item.lodging}</td>
-                    <td style={{ padding: "1rem 0.75rem" }}>{item.bus}</td>
-                    <td style={{ padding: "1rem 0.75rem", maxWidth: "260px", color: "var(--color-text-secondary)" }}>
-                      {item.message || "—"}
-                    </td>
-                    <td style={{ padding: "1rem 0.75rem", fontSize: "0.8rem", color: "var(--color-text-tertiary)" }}>
-                      {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—"}
-                    </td>
+        {!loading && filtered.length > 0 && (
+          <>
+            {/* Desktop Table View (>= 768px) */}
+            <div className={styles.tableContainer}>
+              <table className={styles.adminTable}>
+                <thead>
+                  <tr>
+                    <th>Attendee Name</th>
+                    <th>Phone & Email</th>
+                    <th>Status</th>
+                    <th>Guests</th>
+                    <th>Lodging</th>
+                    <th>Bus</th>
+                    <th>Tribute / Message</th>
+                    <th>Submitted</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                </thead>
+                <tbody>
+                  {filtered.map((item, idx) => {
+                    const isAttending = item.attending === "yes";
+                    return (
+                      <tr
+                        key={item.id || idx}
+                        onClick={() => setSelectedAttendee(item)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td style={{ fontWeight: "700" }}>
+                          {item.firstName} {item.lastName}
+                        </td>
+                        <td>
+                          <div>{item.phone || "—"}</div>
+                          {item.email && (
+                            <div style={{ color: "var(--color-text-tertiary)", fontSize: "0.75rem" }}>
+                              {item.email}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
+                            {isAttending ? "ATTENDING" : "DECLINED"}
+                          </span>
+                        </td>
+                        <td>{item.guests ? `+${item.guests}` : "0"}</td>
+                        <td>{item.lodging === "yes" ? "✓ Yes" : "No"}</td>
+                        <td>{item.bus === "yes" ? "✓ Yes" : "No"}</td>
+                        <td style={{ maxWidth: "240px" }}>
+                          {item.message ? (
+                            <span style={{ fontStyle: "italic", color: "var(--color-text-secondary)" }}>
+                              &ldquo;{item.message.length > 60 ? item.message.substring(0, 60) + "..." : item.message}&rdquo;
+                            </span>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td style={{ fontSize: "0.78rem", color: "var(--color-text-tertiary)" }}>
+                          {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards View (< 768px) */}
+            <div className={styles.mobileCardsContainer}>
+              {filtered.map((item, idx) => {
+                const isAttending = item.attending === "yes";
+                return (
+                  <div
+                    key={item.id || idx}
+                    className={styles.attendeeMobileCard}
+                    onClick={() => setSelectedAttendee(item)}
+                  >
+                    <div className={styles.attendeeMobileHeader}>
+                      <div>
+                        <h4 className={styles.attendeeName}>
+                          {item.firstName} {item.lastName}
+                        </h4>
+                        <div style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)", marginTop: "0.2rem" }}>
+                          📞 {item.phone || "No phone provided"}
+                        </div>
+                      </div>
+                      <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
+                        {isAttending ? "ATTENDING" : "DECLINED"}
+                      </span>
+                    </div>
+
+                    <div className={styles.fieldGrid}>
+                      <div className={styles.fieldItem}>
+                        <span className={styles.fieldKey}>Guests</span>
+                        <span className={styles.fieldVal}>{item.guests ? `+${item.guests}` : "0"}</span>
+                      </div>
+                      <div className={styles.fieldItem}>
+                        <span className={styles.fieldKey}>Lodging</span>
+                        <span className={styles.fieldVal}>{item.lodging === "yes" ? "✓ Needed" : "No"}</span>
+                      </div>
+                      <div className={styles.fieldItem}>
+                        <span className={styles.fieldKey}>Bus Transport</span>
+                        <span className={styles.fieldVal}>{item.bus === "yes" ? "✓ Bus" : "No"}</span>
+                      </div>
+                      <div className={styles.fieldItem}>
+                        <span className={styles.fieldKey}>Submitted</span>
+                        <span className={styles.fieldVal}>
+                          {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {item.message && (
+                      <div className={styles.tributeBox}>
+                        &ldquo;{item.message}&rdquo;
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
+
+      {/* Attendee Details Drawer / Modal */}
+      <AnimatePresence>
+        {selectedAttendee && (
+          <div className={styles.modalOverlay} onClick={() => setSelectedAttendee(null)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", borderBottom: "1px solid var(--color-border)", paddingBottom: "0.75rem" }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "1.25rem", color: "var(--color-text)" }}>
+                    {selectedAttendee.firstName} {selectedAttendee.lastName}
+                  </h3>
+                  <span style={{ fontSize: "0.8rem", color: "var(--color-text-tertiary)" }}>
+                    Submitted {selectedAttendee.submittedAt ? new Date(selectedAttendee.submittedAt).toLocaleString() : "Recently"}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedAttendee(null)}
+                  style={{ background: "none", border: "none", fontSize: "1.4rem", cursor: "pointer", color: "var(--color-text-secondary)" }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Phone / WhatsApp</label>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>
+                    <a href={`tel:${selectedAttendee.phone}`} style={{ color: "var(--color-accent)", textDecoration: "none" }}>
+                      {selectedAttendee.phone || "—"}
+                    </a>
+                  </p>
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Email</label>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>{selectedAttendee.email || "—"}</p>
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Attendance</label>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>
+                    {selectedAttendee.attending === "yes" ? "✓ Attending Burial" : "Cannot Attend"}
+                  </p>
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Additional Guests</label>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>{selectedAttendee.guests || "0"}</p>
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Accommodation Needed?</label>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>{selectedAttendee.lodging === "yes" ? "Yes, requested lodging" : "No"}</p>
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Bus Charter Transport?</label>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>{selectedAttendee.bus === "yes" ? "Yes, joining bus charter" : "No"}</p>
+                </div>
+              </div>
+
+              {selectedAttendee.message && (
+                <div style={{ marginTop: "1rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Tribute / Condolence Message</label>
+                  <div className={styles.tributeBox} style={{ marginTop: "0.4rem" }}>
+                    &ldquo;{selectedAttendee.message}&rdquo;
+                  </div>
+                </div>
+              )}
+
+              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => setSelectedAttendee(null)} className="btn btn-secondary">
+                  Close Detail View
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
