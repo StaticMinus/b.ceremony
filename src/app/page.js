@@ -23,8 +23,8 @@ import BackgroundMesh from "./components/BackgroundMesh";
 
 const STATS = [
   { value: 77, suffix: "", label: "Years of Grace" },
-  { value: 3, suffix: "", label: "Generations Inspired" },
-  { value: 40, suffix: "+", label: "Years of Service" },
+  { value: 40, suffix: "+", label: "Years of Public Service" },
+  { value: 10, suffix: " Years", label: "as Executive Chairman" },
   { value: 1, suffix: "", label: "Extraordinary Legacy" },
 ];
 
@@ -224,7 +224,7 @@ export default function Home() {
                     <span className={styles.biographyBadgeIcon}>🏛️</span>
                     <div className={styles.biographyBadgeText}>
                       <span className={styles.biographyBadgeTitle}>
-                        10 YEARS OF EXECUTIVE SERVICE
+                        10 YEARS AS EXECUTIVE CHAIRMAN
                       </span>
                       <span className={styles.biographyBadgeSub}>
                         National Salaries, Incomes and Wages Commission (2009–2019)
