@@ -10,6 +10,7 @@ import MagneticButton from "./components/MagneticButton";
 import ScrollTimeline from "./components/ScrollTimeline";
 import ParallaxGallery from "./components/ParallaxGallery";
 import ExtendedDossier from "./components/ExtendedDossier";
+import FuneralSupport from "./components/FuneralSupport";
 
 /* 
  * TASTE-SKILL DESIGN READ:
@@ -166,6 +167,9 @@ export default function Home() {
                 </a>
                 <a href="#programme" className="btn btn-secondary">
                   Burial Programme
+                </a>
+                <a href="#support" className="btn btn-secondary">
+                  Funeral Support
                 </a>
               </div>
             </FadeIn>
@@ -403,6 +407,11 @@ export default function Home() {
           </FadeIn>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* FUNERAL SUPPORT & FINANCIAL TRIBUTES                       */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <FuneralSupport />
 
       {/* ═══════════════════════════════════════════════════════════ */}
       {/* FAMILY SIGN-OFF & FOOTER                                   */}
