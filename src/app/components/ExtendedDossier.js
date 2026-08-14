@@ -98,9 +98,9 @@ const DOSSIER_SECTIONS = [
         </p>
 
         <div className={styles.dossierHighlightBox}>
-          <span className={styles.highlightBadge}>LANDMARK PRESIDENTIAL APPOINTMENT</span>
-          <h3>Executive Chairman of the Commission</h3>
-          <p className={styles.highlightDates}>7th August 2009 — 17th August 2019 (10-Year Decennial Tenure)</p>
+          <span className={styles.highlightBadge}>DECENNIAL PRESIDENTIAL APPOINTMENT</span>
+          <h3>Executive Chairman of NSIWC</h3>
+          <p className={styles.highlightDates}>Appointed Executive Chairman of the National Salaries, Incomes and Wages Commission in Aug. 2009 and served for a decade under 3 Presidents. Led national minimum wage committees (2009, 2018, 2019), wage relativity panels, and salary revisions across major federal agencies. Exited gloriously.</p>
         </div>
       </div>
     ),

@@ -37,7 +37,7 @@ const TIMELINE_DATA = [
     year: "2009 – 2019",
     title: "Executive Chairman of NSIWC",
     subtitle: "Decennial Presidential Appointment",
-    desc: "Appointed by the President Commander-in-Chief as Executive Chairman of NSIWC, serving 10 years (2009–2019). Led national minimum wage committees (2019, 2018, 2009), wage relativity panels, and salary revisions across major federal agencies.",
+    desc: "Appointed Executive Chairman of the National Salaries, Incomes and Wages Commission in Aug. 2009 and served for a decade under 3 Presidents. Led national minimum wage committees (2009, 2018, 2019), wage relativity panels, and salary revisions across major federal agencies. Exited gloriously.",
     icon: "⚖️",
   },
   {
