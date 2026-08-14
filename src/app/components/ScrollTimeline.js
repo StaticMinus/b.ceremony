@@ -21,7 +21,7 @@ const TIMELINE_DATA = [
   },
   {
     year: "1978 – 1992",
-    title: "Federal Public Service Genesis & NSIWC Pioneer",
+    title: "Federal Public Service Genesis & NSIWC Service",
     subtitle: "Public Sector Architecture",
     desc: "Joined Federal Public Service in 1978 on Grade Level 08. In 1992, became a pioneer senior officer of the National Salaries, Incomes and Wages Commission (NSIWC), formulating its structural architecture and organogram.",
     icon: "🏛️",

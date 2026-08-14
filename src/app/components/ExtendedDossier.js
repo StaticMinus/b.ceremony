@@ -84,7 +84,7 @@ const DOSSIER_SECTIONS = [
     id: "service",
     label: "Federal Leadership",
     icon: "🏛️",
-    title: "3. Federal Public Service Genesis & NSIWC Leadership",
+    title: "3. Federal Public Service Genesis & NSIWC Service",
     content: (
       <div className={styles.dossierContentBlock}>
         <p className={styles.dossierLeadText}>
