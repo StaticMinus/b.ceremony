@@ -24,5 +24,18 @@
     "bus": "no",
     "message": "Tribute message.",
     "submittedAt": "2026-08-14T14:56:21.531Z"
+  },
+  {
+    "id": "rsvp_1786730400000_pauline",
+    "firstName": "Mrs. Pauline",
+    "lastName": "INNEKWE",
+    "email": "paulyqueen.d@gmail.com",
+    "phone": "+2348032885491",
+    "attending": "yes",
+    "guests": "1",
+    "lodging": "no",
+    "bus": "yes",
+    "message": "TRIBUTE TO A GREAT FATHER AND PATRIARCH The passing of your dearly beloved father, Patriarch and Elder statesman High Chief Sir Dr Richard O. Egbule, is indeed a huge loss to the family and humanity at large. May God grant his soul eternal rest.",
+    "submittedAt": "2026-08-14T18:00:00.000Z"
   }
 ]

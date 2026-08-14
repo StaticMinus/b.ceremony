@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./admin.module.css";
@@ -11,129 +11,45 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [filterAttending, setFilterAttending] = useState("all");
-  const [syncStatus, setSyncStatus] = useState("");
   const [lastUpdatedTime, setLastUpdatedTime] = useState("");
   const [selectedAttendee, setSelectedAttendee] = useState(null);
 
-  const fileInputRef = useRef(null);
-
   useEffect(() => {
-    // Initial fetch on mount
-    fetchAndSyncSubmissions();
+    // Initial fetch on page load
+    fetchSubmissions();
 
-    // Auto-poll live every 4 seconds to bring in new submissions automatically
+    // Live auto-poll every 3 seconds from server database
     const interval = setInterval(() => {
-      fetchAndSyncSubmissions(true);
-    }, 4000);
+      fetchSubmissions(true);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
 
-  function mergeRecords(serverList, localList) {
-    let deletedIds = [];
-    if (typeof window !== "undefined") {
-      try {
-        deletedIds = JSON.parse(localStorage.getItem("egbule_deleted_ids") || "[]");
-      } catch {
-        deletedIds = [];
-      }
-    }
-
-    const map = new Map();
-
-    for (const item of serverList || []) {
-      if (!item) continue;
-      const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
-      if (
-        deletedIds.includes(item.id) ||
-        (item.phone && deletedIds.includes(item.phone)) ||
-        (item.firstName === "Test" && item.lastName === "User")
-      ) {
-        continue;
-      }
-      map.set(key, item);
-    }
-
-    const missingOnServer = [];
-    for (const item of localList || []) {
-      if (!item) continue;
-      const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
-      if (
-        deletedIds.includes(item.id) ||
-        (item.phone && deletedIds.includes(item.phone)) ||
-        (item.firstName === "Test" && item.lastName === "User")
-      ) {
-        continue;
-      }
-      if (!map.has(key)) {
-        map.set(key, item);
-        missingOnServer.push(item);
-      }
-    }
-
-    return {
-      merged: Array.from(map.values()),
-      missingOnServer,
-    };
-  }
-
-  async function fetchAndSyncSubmissions(isBackgroundPoll = false) {
+  async function fetchSubmissions(isBackgroundPoll = false) {
     if (!isBackgroundPoll) {
       setLoading(true);
       setError("");
     }
 
     try {
-      // 1. Fetch Server Data from Database API
+      // Always fetch fresh data from server API without browser HTTP cache
       const res = await fetch("/api/rsvp?t=" + Date.now(), { cache: "no-store" });
-      let serverData = [];
       if (res.ok) {
-        serverData = await res.json();
-      }
-
-      // 2. Read Local Storage Data Backup
-      let localData = [];
-      if (typeof window !== "undefined") {
-        try {
-          localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
-        } catch {
-          localData = [];
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setAttendees(data);
+          setLastUpdatedTime(new Date().toLocaleTimeString());
+        }
+      } else {
+        if (!isBackgroundPoll) {
+          setError("Failed to fetch latest responses from server.");
         }
       }
-
-      // 3. Merge Server & Local Storage Records
-      const { merged, missingOnServer } = mergeRecords(serverData, localData);
-
-      // 4. Auto-Sync Missing Local Records back to Server Database
-      if (missingOnServer.length > 0 && !isBackgroundPoll) {
-        setSyncStatus(`Syncing ${missingOnServer.length} new record(s) to database...`);
-        try {
-          await fetch("/api/rsvp", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "sync", entries: missingOnServer }),
-          });
-        } catch (e) {
-          console.warn("Auto-sync back to server failed:", e);
-        }
-      }
-
-      // 5. Update Master Local Storage Cache
-      if (typeof window !== "undefined") {
-        localStorage.setItem("egbule_rsvp_submissions", JSON.stringify(merged));
-      }
-
-      setAttendees(merged);
-      setLastUpdatedTime(new Date().toLocaleTimeString());
     } catch (err) {
       console.error("Fetch submissions error:", err);
       if (!isBackgroundPoll) {
-        if (typeof window !== "undefined") {
-          const localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
-          setAttendees(localData);
-        } else {
-          setError("Could not load responses. Ensure the server is running.");
-        }
+        setError("Network error loading responses. Please check your connection.");
       }
     } finally {
       if (!isBackgroundPoll) setLoading(false);
@@ -142,51 +58,6 @@ export default function AdminPage() {
 
   function downloadCSV() {
     window.location.href = "/api/rsvp?format=csv";
-  }
-
-  function exportJSONBackup() {
-    if (!attendees.length) return;
-    const jsonString = JSON.stringify(attendees, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Egbule_RSVP_Backup_${Date.now()}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
-  async function handleImportJSON(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const text = await file.text();
-      const imported = JSON.parse(text);
-      if (!Array.isArray(imported)) {
-        alert("Invalid backup file format. Expected a JSON array.");
-        return;
-      }
-
-      setLoading(true);
-      const res = await fetch("/api/rsvp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "sync", entries: imported }),
-      });
-
-      if (res.ok) {
-        alert(`Successfully imported and synced ${imported.length} attendee records!`);
-        fetchAndSyncSubmissions();
-      } else {
-        alert("Failed to sync imported data with the server.");
-      }
-    } catch (err) {
-      alert("Error parsing backup JSON file: " + err.message);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
   }
 
   /* Filtering */
@@ -233,36 +104,17 @@ export default function AdminPage() {
 
             <div className={styles.liveBadge}>
               <span className={styles.pulseDot} />
-              <span>Live Auto-Sync Active {lastUpdatedTime ? `(${lastUpdatedTime})` : ""}</span>
+              <span>Live Sync Active {lastUpdatedTime ? `(${lastUpdatedTime})` : ""}</span>
             </div>
-
-            {syncStatus && (
-              <p style={{ fontSize: "0.82rem", color: "#16a34a", marginTop: "0.4rem", fontWeight: "600" }}>
-                ✓ {syncStatus}
-              </p>
-            )}
           </div>
 
           <div className={styles.adminActions}>
-            <button onClick={() => fetchAndSyncSubmissions()} className={`btn btn-secondary ${styles.adminBtn}`}>
+            <button onClick={() => fetchSubmissions()} className={`btn btn-secondary ${styles.adminBtn}`}>
               🔄 Refresh Now
             </button>
             <button onClick={downloadCSV} className={`btn btn-primary ${styles.adminBtn}`}>
               📥 Download CSV
             </button>
-            <button onClick={exportJSONBackup} className={`btn btn-secondary ${styles.adminBtn}`}>
-              💾 Backup JSON
-            </button>
-            <button onClick={() => fileInputRef.current?.click()} className={`btn btn-secondary ${styles.adminBtn}`}>
-              📤 Import Backup
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleImportJSON}
-              style={{ display: "none" }}
-            />
           </div>
         </div>
 
@@ -319,7 +171,7 @@ export default function AdminPage() {
         {/* Content Loading & Error States */}
         {loading && attendees.length === 0 && (
           <p style={{ padding: "3rem", textAlign: "center", color: "var(--color-text-secondary)" }}>
-            Loading attendee records from database...
+            Loading attendee records from server...
           </p>
         )}
         {error && <p style={{ padding: "3rem", textAlign: "center", color: "#DC2626" }}>{error}</p>}

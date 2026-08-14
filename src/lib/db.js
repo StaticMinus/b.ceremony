@@ -152,6 +152,14 @@ export async function saveAttendee(entry) {
       }
     }
 
+    // Also sync to data/attendees.json on disk so git/file state stays updated
+    try {
+      const allRecords = await getAttendees();
+      await fs.writeFile(DATA_FILE, JSON.stringify(allRecords, null, 2), "utf-8");
+    } catch (e) {
+      console.warn("Could not sync to attendees.json:", e);
+    }
+
     return await getAttendees();
   } catch (err) {
     console.error("Database save error in saveAttendee:", err);
