@@ -24,18 +24,5 @@
     "bus": "no",
     "message": "Tribute message.",
     "submittedAt": "2026-08-14T14:56:21.531Z"
-  },
-  {
-    "id": "rsvp_1786571132380_test",
-    "firstName": "Test",
-    "lastName": "User",
-    "email": "test@example.com",
-    "phone": "+2348000000000",
-    "attending": "yes",
-    "guests": "0",
-    "lodging": "no",
-    "bus": "no",
-    "message": "",
-    "submittedAt": "2026-08-12T21:45:32.380Z"
   }
 ]
