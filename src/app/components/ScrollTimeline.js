@@ -51,7 +51,13 @@ const TIMELINE_DATA = [
     year: "Family Legacy",
     title: "Family Legacy",
     subtitle: "Devoted Family Patriarch",
-    desc: "Father to 4 Children · Foster Father to 1 · Father-in-law to 4 · 15 Grandchildren · Brother, Uncle, Mentor, & Friend to many.",
+    items: [
+      "Father to 4 Children",
+      "Foster Father to 1",
+      "Father-in-law to 4",
+      "15 Grandchildren",
+      "Brother, Uncle, Mentor & Friend to many",
+    ],
     icon: "👨‍👩‍👧‍👦",
   },
 ];
@@ -110,7 +116,15 @@ export default function ScrollTimeline() {
                     <p className={styles.timelineCardSubtitle}>{item.subtitle}</p>
                   )}
 
-                  <p className={styles.timelineCardDesc}>{item.desc}</p>
+                  {item.items ? (
+                    <ul style={{ marginTop: "0.65rem", paddingLeft: "1.2rem", color: "var(--color-text-secondary)", fontSize: "0.9rem", lineHeight: "1.7" }}>
+                      {item.items.map((it) => (
+                        <li key={it} style={{ marginBottom: "0.25rem" }}>{it}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={styles.timelineCardDesc}>{item.desc}</p>
+                  )}
                 </div>
               </div>
 

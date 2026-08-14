@@ -30,7 +30,13 @@ const DOSSIER_SECTIONS = [
           <div className={styles.dossierInfoCard}>
             <span className={styles.dossierInfoTag}>FAMILY LEGACY</span>
             <h4>Devoted Family Patriarch</h4>
-            <p>Father to 4 Children · Foster Father to 1 · Father-in-law to 4 · 15 Grandchildren · Brother, Uncle, Mentor & Friend to many</p>
+            <ul style={{ marginTop: "0.5rem", paddingLeft: "1.1rem", fontSize: "0.88rem", color: "var(--color-text-secondary)", lineHeight: "1.65" }}>
+              <li>Father to 4 Children</li>
+              <li>Foster Father to 1</li>
+              <li>Father-in-law to 4</li>
+              <li>15 Grandchildren</li>
+              <li>Brother, Uncle, Mentor & Friend to many</li>
+            </ul>
           </div>
         </div>
       </div>
