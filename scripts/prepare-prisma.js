@@ -9,7 +9,12 @@ async function prepareSchema() {
     process.env.STORAGE_URL ||
     process.env.POSTGRES_URL ||
     process.env.POSTGRES_PRISMA_URL ||
+    process.env.NEON_DATABASE_URL ||
     "file:./dev.db";
+
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = dbUrl;
+  }
 
   const isPostgres = dbUrl.startsWith("postgres://") || dbUrl.startsWith("postgresql://");
   const provider = isPostgres ? "postgresql" : "sqlite";
