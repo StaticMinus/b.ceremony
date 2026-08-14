@@ -258,7 +258,7 @@ const DOSSIER_SECTIONS = [
     id: "titles",
     label: "Titles & Faith Honors",
     icon: "📜",
-    title: "6. Chieftaincy Titles, Christian Faith & Diocesan Recognition",
+    title: "6. High Chieftaincy, Knighthood & Humanitarian Legacy",
     content: (
       <div className={styles.dossierContentBlock}>
         <h4 className={styles.dossierSubheading}>Chieftaincy Titles & Traditional Honours</h4>

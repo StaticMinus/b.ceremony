@@ -42,9 +42,9 @@ const TIMELINE_DATA = [
   },
   {
     year: "Lifetime Legacy",
-    title: "Chieftaincy, Youth Placements & Knighthood",
-    subtitle: "Obanze Akoji · KSM · 4 Decades of Mentorship",
-    desc: "Obanze Akoji of Ehime Mbano alongside 4 traditional titles. Devoted 40+ years to placing hundreds of youths across federal ministries and defense forces. A 4th Degree Knight of St. Mulumba (KSM) and Jerusalem Pilgrim (JP).",
+    title: "High Chieftaincy, Knighthood & Humanitarian Legacy",
+    subtitle: "Obanze Akoji · KSM · Lifetime of Humanitarianism",
+    desc: "Bagged the prestigious Obanze Akoji of Ehime Mbano traditional title alongside other traditional titles. Devoted 40+ years to placing hundreds of youths across federal ministries, agencies as well as the defense forces. A 4th Degree Knight of St. Mulumba (KSM) and Jerusalem Pilgrim (JP).",
     icon: "👑",
   },
 ];
