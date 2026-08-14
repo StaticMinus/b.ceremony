@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "../page.module.css";
 
@@ -10,21 +10,94 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [filterAttending, setFilterAttending] = useState("all");
+  const [syncStatus, setSyncStatus] = useState("");
+
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    fetchSubmissions();
+    fetchAndSyncSubmissions();
   }, []);
 
-  async function fetchSubmissions() {
+  function mergeRecords(serverList, localList) {
+    const map = new Map();
+
+    for (const item of serverList || []) {
+      if (!item) continue;
+      const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
+      map.set(key, item);
+    }
+
+    const missingOnServer = [];
+    for (const item of localList || []) {
+      if (!item) continue;
+      const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
+      if (!map.has(key)) {
+        map.set(key, item);
+        missingOnServer.push(item);
+      }
+    }
+
+    return {
+      merged: Array.from(map.values()),
+      missingOnServer,
+    };
+  }
+
+  async function fetchAndSyncSubmissions() {
     setLoading(true);
     setError("");
+    setSyncStatus("");
+
     try {
+      // 1. Fetch Server Data
       const res = await fetch("/api/rsvp");
-      if (!res.ok) throw new Error("Failed to load attendees");
-      const data = await res.json();
-      setAttendees(data);
-    } catch {
-      setError("Could not load responses. Ensure the server is running.");
+      let serverData = [];
+      if (res.ok) {
+        serverData = await res.json();
+      }
+
+      // 2. Read Local Storage Data Backup
+      let localData = [];
+      if (typeof window !== "undefined") {
+        try {
+          localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+        } catch {
+          localData = [];
+        }
+      }
+
+      // 3. Merge Server & Local Storage Records
+      const { merged, missingOnServer } = mergeRecords(serverData, localData);
+
+      // 4. Auto-Sync Missing Local Records back to Server
+      if (missingOnServer.length > 0) {
+        setSyncStatus(`Auto-syncing ${missingOnServer.length} record(s) to server...`);
+        try {
+          await fetch("/api/rsvp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "sync", entries: missingOnServer }),
+          });
+        } catch (e) {
+          console.warn("Auto-sync back to server failed:", e);
+        }
+      }
+
+      // 5. Update Master Local Storage Cache
+      if (typeof window !== "undefined") {
+        localStorage.setItem("egbule_rsvp_submissions", JSON.stringify(merged));
+      }
+
+      setAttendees(merged);
+    } catch (err) {
+      console.error("Fetch submissions error:", err);
+      // Fallback to local storage if network or server fails
+      if (typeof window !== "undefined") {
+        const localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+        setAttendees(localData);
+      } else {
+        setError("Could not load responses. Ensure the server is running.");
+      }
     } finally {
       setLoading(false);
     }
@@ -34,9 +107,54 @@ export default function AdminPage() {
     window.location.href = "/api/rsvp?format=csv";
   }
 
+  function exportJSONBackup() {
+    if (!attendees.length) return;
+    const jsonString = JSON.stringify(attendees, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Egbule_RSVP_Backup_${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function handleImportJSON(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const imported = JSON.parse(text);
+      if (!Array.isArray(imported)) {
+        alert("Invalid backup file format. Expected a JSON array.");
+        return;
+      }
+
+      setLoading(true);
+      const res = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync", entries: imported }),
+      });
+
+      if (res.ok) {
+        alert(`Successfully imported and synced ${imported.length} attendee records!`);
+        fetchAndSyncSubmissions();
+      } else {
+        alert("Failed to sync imported data with the server.");
+      }
+    } catch (err) {
+      alert("Error parsing backup JSON file: " + err.message);
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
   /* Filtering */
   const filtered = attendees.filter((item) => {
-    const nameMatch = `${item.firstName} ${item.lastName} ${item.phone}`
+    const nameMatch = `${item.firstName || ""} ${item.lastName || ""} ${item.phone || ""}`
       .toLowerCase()
       .includes(search.toLowerCase());
 
@@ -76,11 +194,37 @@ export default function AdminPage() {
             <p className="body text-secondary">
               High Chief Sir Dr. Richard O. Egbule Burial Ceremony Submissions
             </p>
+            {syncStatus && (
+              <p style={{ fontSize: "0.8rem", color: "#16a34a", marginTop: "0.25rem", fontWeight: "600" }}>
+                ✓ {syncStatus}
+              </p>
+            )}
           </div>
 
-          <button onClick={downloadCSV} className="btn btn-primary">
-            📥 Download CSV / Excel
-          </button>
+          <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
+            <button onClick={fetchAndSyncSubmissions} className="btn btn-secondary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+              🔄 Refresh & Sync
+            </button>
+
+            <button onClick={downloadCSV} className="btn btn-primary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+              📥 Download CSV
+            </button>
+
+            <button onClick={exportJSONBackup} className="btn btn-secondary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+              💾 Backup JSON
+            </button>
+
+            <button onClick={() => fileInputRef.current?.click()} className="btn btn-secondary" style={{ fontSize: "0.82rem", padding: "0.5rem 1rem" }}>
+              📤 Import Backup
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImportJSON}
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
 
         {/* Metrics Grid */}
@@ -181,13 +325,14 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((item) => (
-                  <tr key={item.id || item.phone || item.firstName} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                {filtered.map((item, idx) => (
+                  <tr key={item.id || item.phone || idx} style={{ borderBottom: "1px solid var(--color-border)" }}>
                     <td style={{ padding: "1rem 0.75rem", fontWeight: "600" }}>
                       {item.firstName} {item.lastName}
                     </td>
                     <td style={{ padding: "1rem 0.75rem" }}>
-                      {item.phone || "—"}
+                      <div>{item.phone || "—"}</div>
+                      <div style={{ color: "var(--color-text-tertiary)", fontSize: "0.75rem" }}>{item.email}</div>
                     </td>
                     <td style={{ padding: "1rem 0.75rem" }}>
                       <span
@@ -200,7 +345,7 @@ export default function AdminPage() {
                           color: item.attending === "yes" ? "#10B981" : "#EF4444",
                         }}
                       >
-                        {item.attending.toUpperCase()}
+                        {(item.attending || "").toUpperCase()}
                       </span>
                     </td>
                     <td style={{ padding: "1rem 0.75rem" }}>{item.guests}</td>

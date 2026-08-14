@@ -46,6 +46,16 @@ export default function RSVPForm() {
         throw new Error(data.error || "Submission failed. Please check your inputs.");
       }
 
+      if (data.entry && typeof window !== "undefined") {
+        try {
+          const stored = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+          const updated = [data.entry, ...stored.filter((s) => s.id !== data.entry.id)];
+          localStorage.setItem("egbule_rsvp_submissions", JSON.stringify(updated));
+        } catch (e) {
+          console.warn("Could not save backup to localStorage:", e);
+        }
+      }
+
       setSubmittedName(`${form.firstName} ${form.lastName}`);
       setSubmitted(true);
       setForm(initialForm);

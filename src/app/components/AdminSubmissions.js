@@ -9,16 +9,76 @@ export default function AdminSubmissions() {
   const [attendees, setAttendees] = useState([]);
   const [error, setError] = useState("");
 
+  function mergeRecords(serverList, localList) {
+    const map = new Map();
+
+    for (const item of serverList || []) {
+      if (!item) continue;
+      const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
+      map.set(key, item);
+    }
+
+    const missingOnServer = [];
+    for (const item of localList || []) {
+      if (!item) continue;
+      const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
+      if (!map.has(key)) {
+        map.set(key, item);
+        missingOnServer.push(item);
+      }
+    }
+
+    return {
+      merged: Array.from(map.values()),
+      missingOnServer,
+    };
+  }
+
   async function fetchSubmissions() {
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/rsvp");
-      if (!res.ok) throw new Error("Failed to load attendees");
-      const data = await res.json();
-      setAttendees(data);
+      let serverData = [];
+      if (res.ok) {
+        serverData = await res.json();
+      }
+
+      let localData = [];
+      if (typeof window !== "undefined") {
+        try {
+          localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+        } catch {
+          localData = [];
+        }
+      }
+
+      const { merged, missingOnServer } = mergeRecords(serverData, localData);
+
+      if (missingOnServer.length > 0) {
+        try {
+          await fetch("/api/rsvp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "sync", entries: missingOnServer }),
+          });
+        } catch (e) {
+          console.warn("Auto sync failed:", e);
+        }
+      }
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("egbule_rsvp_submissions", JSON.stringify(merged));
+      }
+
+      setAttendees(merged);
     } catch {
-      setError("Could not load responses. Ensure dev server is running.");
+      if (typeof window !== "undefined") {
+        const localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+        setAttendees(localData);
+      } else {
+        setError("Could not load responses. Ensure server is running.");
+      }
     } finally {
       setLoading(false);
     }
@@ -124,7 +184,7 @@ export default function AdminSubmissions() {
                 <div>
                   <h3 className="title">Attendee Responses ({attendees.length})</h3>
                   <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
-                    Real-time list of submitted RSVPs saved in `data/attendees.json`
+                    Real-time attendee list backed up in browser & server storage
                   </p>
                 </div>
                 <button
@@ -179,7 +239,7 @@ export default function AdminSubmissions() {
                       </thead>
                       <tbody>
                         {attendees.map((item, idx) => (
-                          <tr key={idx} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                          <tr key={item.id || idx} style={{ borderBottom: "1px solid var(--color-border)" }}>
                             <td style={{ padding: "0.75rem", fontWeight: "600" }}>
                               {item.firstName} {item.lastName}
                             </td>

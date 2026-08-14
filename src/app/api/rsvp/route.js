@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
-import { getAttendees, saveAttendee } from "@/lib/db";
+import { getAttendees, saveAttendee, saveMultipleAttendees } from "@/lib/db";
 
 export async function POST(request) {
   try {
     const body = await request.json();
+
+    // Bulk Sync / Restore Request from Admin or LocalStorage
+    if (body.action === "sync" && Array.isArray(body.entries)) {
+      const updated = await saveMultipleAttendees(body.entries);
+      return NextResponse.json({ success: true, count: updated.length, attendees: updated });
+    }
 
     const {
       firstName,
@@ -32,7 +38,7 @@ export async function POST(request) {
     }
 
     const entry = {
-      id: "rsvp_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+      id: body.id || ("rsvp_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4)),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: (email || "").trim(),
@@ -42,12 +48,12 @@ export async function POST(request) {
       lodging: lodging || "no",
       bus: bus || "no",
       message: (message || "").trim(),
-      submittedAt: new Date().toISOString(),
+      submittedAt: body.submittedAt || new Date().toISOString(),
     };
 
-    await saveAttendee(entry);
+    const updated = await saveAttendee(entry);
 
-    return NextResponse.json({ success: true, entry });
+    return NextResponse.json({ success: true, entry, total: updated.length });
   } catch (err) {
     console.error("RSVP submission error:", err);
     return NextResponse.json(
