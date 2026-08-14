@@ -34,10 +34,17 @@ const TIMELINE_DATA = [
     icon: "📚",
   },
   {
+    year: "2007 – 2009",
+    title: "Secretary to the Commission (NSIWC)",
+    subtitle: "Executive Commission Leadership",
+    desc: "Served as Secretary to the National Salaries, Incomes and Wages Commission from 2007 to 2009 (equivalent to Federal Permanent Secretary) before becoming Executive Chairman.",
+    icon: "📋",
+  },
+  {
     year: "2009 – 2019",
     title: "Executive Chairman of NSIWC",
     subtitle: "Decennial Presidential Appointment",
-    desc: "Served 10 years as Executive Chairman of the National Salaries, Incomes and Wages Commission. Led national minimum wage committees (2019, 2018, 2009), wage relativity panels, and salary revisions across major federal agencies.",
+    desc: "Appointed by the President Commander-in-Chief as Executive Chairman of NSIWC, serving 10 years (2009–2019). Led national minimum wage committees (2019, 2018, 2009), wage relativity panels, and salary revisions across major federal agencies.",
     icon: "⚖️",
   },
   {
