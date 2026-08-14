@@ -26,19 +26,6 @@
     "submittedAt": "2026-08-14T14:56:21.531Z"
   },
   {
-    "id": "rsvp_1786574813341_hdr0",
-    "firstName": "David",
-    "lastName": "Olagbenro",
-    "email": "davidolagbenro35@gmail.com",
-    "phone": "+2349039005265",
-    "attending": "yes",
-    "guests": "1",
-    "lodging": "no",
-    "bus": "no",
-    "message": "",
-    "submittedAt": "2026-08-12T22:46:53.341Z"
-  },
-  {
     "id": "rsvp_1786571132380_test",
     "firstName": "Test",
     "lastName": "User",
