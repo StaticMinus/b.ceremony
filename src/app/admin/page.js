@@ -12,12 +12,21 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [filterAttending, setFilterAttending] = useState("all");
   const [syncStatus, setSyncStatus] = useState("");
+  const [lastUpdatedTime, setLastUpdatedTime] = useState("");
   const [selectedAttendee, setSelectedAttendee] = useState(null);
 
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    // Initial fetch on mount
     fetchAndSyncSubmissions();
+
+    // Auto-poll live every 4 seconds to bring in new submissions automatically
+    const interval = setInterval(() => {
+      fetchAndSyncSubmissions(true);
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, []);
 
   function mergeRecords(serverList, localList) {
@@ -38,8 +47,7 @@ export default function AdminPage() {
       if (
         deletedIds.includes(item.id) ||
         (item.phone && deletedIds.includes(item.phone)) ||
-        (item.firstName === "Test" && item.lastName === "User") ||
-        (item.firstName === "David" && item.lastName === "Olagbenro")
+        (item.firstName === "Test" && item.lastName === "User")
       ) {
         continue;
       }
@@ -53,8 +61,7 @@ export default function AdminPage() {
       if (
         deletedIds.includes(item.id) ||
         (item.phone && deletedIds.includes(item.phone)) ||
-        (item.firstName === "Test" && item.lastName === "User") ||
-        (item.firstName === "David" && item.lastName === "Olagbenro")
+        (item.firstName === "Test" && item.lastName === "User")
       ) {
         continue;
       }
@@ -70,14 +77,15 @@ export default function AdminPage() {
     };
   }
 
-  async function fetchAndSyncSubmissions() {
-    setLoading(true);
-    setError("");
-    setSyncStatus("");
+  async function fetchAndSyncSubmissions(isBackgroundPoll = false) {
+    if (!isBackgroundPoll) {
+      setLoading(true);
+      setError("");
+    }
 
     try {
       // 1. Fetch Server Data from Database API
-      const res = await fetch("/api/rsvp");
+      const res = await fetch("/api/rsvp?t=" + Date.now(), { cache: "no-store" });
       let serverData = [];
       if (res.ok) {
         serverData = await res.json();
@@ -97,8 +105,8 @@ export default function AdminPage() {
       const { merged, missingOnServer } = mergeRecords(serverData, localData);
 
       // 4. Auto-Sync Missing Local Records back to Server Database
-      if (missingOnServer.length > 0) {
-        setSyncStatus(`Auto-syncing ${missingOnServer.length} new record(s) to database...`);
+      if (missingOnServer.length > 0 && !isBackgroundPoll) {
+        setSyncStatus(`Syncing ${missingOnServer.length} new record(s) to database...`);
         try {
           await fetch("/api/rsvp", {
             method: "POST",
@@ -116,58 +124,19 @@ export default function AdminPage() {
       }
 
       setAttendees(merged);
+      setLastUpdatedTime(new Date().toLocaleTimeString());
     } catch (err) {
       console.error("Fetch submissions error:", err);
-      if (typeof window !== "undefined") {
-        const localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
-        setAttendees(localData);
-      } else {
-        setError("Could not load responses. Ensure the server is running.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleDeleteAttendee(item, e) {
-    if (e) e.stopPropagation();
-    if (!item) return;
-
-    if (!confirm(`Are you sure you want to delete ${item.firstName} ${item.lastName}?`)) {
-      return;
-    }
-
-    try {
-      if (item.id) {
-        await fetch(`/api/rsvp?id=${encodeURIComponent(item.id)}`, {
-          method: "DELETE",
-        });
-      }
-
-      if (typeof window !== "undefined") {
-        try {
-          const stored = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
-          const updatedLocal = stored.filter(
-            (s) => s.id !== item.id && s.phone !== item.phone
-          );
-          localStorage.setItem("egbule_rsvp_submissions", JSON.stringify(updatedLocal));
-
-          const deletedIds = JSON.parse(localStorage.getItem("egbule_deleted_ids") || "[]");
-          if (item.id && !deletedIds.includes(item.id)) deletedIds.push(item.id);
-          if (item.phone && !deletedIds.includes(item.phone)) deletedIds.push(item.phone);
-          localStorage.setItem("egbule_deleted_ids", JSON.stringify(deletedIds));
-        } catch (e) {
-          console.warn("Could not update local storage on delete:", e);
+      if (!isBackgroundPoll) {
+        if (typeof window !== "undefined") {
+          const localData = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+          setAttendees(localData);
+        } else {
+          setError("Could not load responses. Ensure the server is running.");
         }
       }
-
-      if (selectedAttendee?.id === item.id) {
-        setSelectedAttendee(null);
-      }
-
-      fetchAndSyncSubmissions();
-    } catch (err) {
-      alert("Failed to delete entry: " + err.message);
+    } finally {
+      if (!isBackgroundPoll) setLoading(false);
     }
   }
 
@@ -261,6 +230,12 @@ export default function AdminPage() {
             <p className={styles.adminSubtitle}>
               High Chief Sir Dr. Richard O. Egbule Burial Ceremony Submissions
             </p>
+
+            <div className={styles.liveBadge}>
+              <span className={styles.pulseDot} />
+              <span>Live Auto-Sync Active {lastUpdatedTime ? `(${lastUpdatedTime})` : ""}</span>
+            </div>
+
             {syncStatus && (
               <p style={{ fontSize: "0.82rem", color: "#16a34a", marginTop: "0.4rem", fontWeight: "600" }}>
                 ✓ {syncStatus}
@@ -269,8 +244,8 @@ export default function AdminPage() {
           </div>
 
           <div className={styles.adminActions}>
-            <button onClick={fetchAndSyncSubmissions} className={`btn btn-secondary ${styles.adminBtn}`}>
-              🔄 Refresh & Sync
+            <button onClick={() => fetchAndSyncSubmissions()} className={`btn btn-secondary ${styles.adminBtn}`}>
+              🔄 Refresh Now
             </button>
             <button onClick={downloadCSV} className={`btn btn-primary ${styles.adminBtn}`}>
               📥 Download CSV
@@ -342,7 +317,11 @@ export default function AdminPage() {
         </div>
 
         {/* Content Loading & Error States */}
-        {loading && <p style={{ padding: "3rem", textAlign: "center", color: "var(--color-text-secondary)" }}>Loading attendee records from database...</p>}
+        {loading && attendees.length === 0 && (
+          <p style={{ padding: "3rem", textAlign: "center", color: "var(--color-text-secondary)" }}>
+            Loading attendee records from database...
+          </p>
+        )}
         {error && <p style={{ padding: "3rem", textAlign: "center", color: "#DC2626" }}>{error}</p>}
 
         {!loading && !filtered.length && !error && (
@@ -353,7 +332,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {!loading && filtered.length > 0 && (
+        {filtered.length > 0 && (
           <>
             {/* Desktop Table View (>= 768px) */}
             <div className={styles.tableContainer}>
@@ -383,10 +362,20 @@ export default function AdminPage() {
                           {item.firstName} {item.lastName}
                         </td>
                         <td>
-                          <div>{item.phone || "—"}</div>
+                          <div>
+                            {item.phone ? (
+                              <a href={`tel:${item.phone}`} className={styles.contactLink}>
+                                {item.phone}
+                              </a>
+                            ) : (
+                              "—"
+                            )}
+                          </div>
                           {item.email && (
-                            <div style={{ color: "var(--color-text-tertiary)", fontSize: "0.75rem" }}>
-                              {item.email}
+                            <div style={{ color: "var(--color-text-tertiary)", fontSize: "0.75rem", wordBreak: "break-all" }}>
+                              <a href={`mailto:${item.email}`} style={{ color: "inherit", textDecoration: "none" }}>
+                                {item.email}
+                              </a>
                             </div>
                           )}
                         </td>
@@ -421,49 +410,57 @@ export default function AdminPage() {
             <div className={styles.mobileCardsContainer}>
               {filtered.map((item, idx) => {
                 const isAttending = item.attending === "yes";
+                const dateFormatted = item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—";
                 return (
                   <div
                     key={item.id || idx}
                     className={styles.attendeeMobileCard}
                     onClick={() => setSelectedAttendee(item)}
                   >
+                    {/* Header */}
                     <div className={styles.attendeeMobileHeader}>
                       <div>
                         <h4 className={styles.attendeeName}>
                           {item.firstName} {item.lastName}
                         </h4>
-                        <div style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)", marginTop: "0.2rem" }}>
-                          📞 {item.phone || "No phone provided"}
-                        </div>
+                        {item.phone && (
+                          <div style={{ fontSize: "0.85rem", marginTop: "0.25rem" }}>
+                            📞 <a href={`tel:${item.phone}`} className={styles.contactLink}>{item.phone}</a>
+                          </div>
+                        )}
+                        {item.email && (
+                          <div style={{ fontSize: "0.78rem", color: "var(--color-text-tertiary)", marginTop: "0.1rem" }}>
+                            ✉️ <a href={`mailto:${item.email}`} style={{ color: "inherit", textDecoration: "none" }}>{item.email}</a>
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
-                          {isAttending ? "ATTENDING" : "DECLINED"}
-                        </span>
-                      </div>
+
+                      <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
+                        {isAttending ? "ATTENDING" : "DECLINED"}
+                      </span>
                     </div>
 
+                    {/* Field Grid */}
                     <div className={styles.fieldGrid}>
                       <div className={styles.fieldItem}>
                         <span className={styles.fieldKey}>Guests</span>
-                        <span className={styles.fieldVal}>{item.guests ? `+${item.guests}` : "0"}</span>
+                        <span className={styles.fieldVal}>{item.guests ? `+${item.guests}` : "0 guests"}</span>
                       </div>
                       <div className={styles.fieldItem}>
                         <span className={styles.fieldKey}>Lodging</span>
-                        <span className={styles.fieldVal}>{item.lodging === "yes" ? "✓ Needed" : "No"}</span>
+                        <span className={styles.fieldVal}>{item.lodging === "yes" ? "✓ Requested" : "No"}</span>
                       </div>
                       <div className={styles.fieldItem}>
-                        <span className={styles.fieldKey}>Bus Transport</span>
-                        <span className={styles.fieldVal}>{item.bus === "yes" ? "✓ Bus" : "No"}</span>
+                        <span className={styles.fieldKey}>Bus Charter</span>
+                        <span className={styles.fieldVal}>{item.bus === "yes" ? "✓ Joining" : "No"}</span>
                       </div>
                       <div className={styles.fieldItem}>
                         <span className={styles.fieldKey}>Submitted</span>
-                        <span className={styles.fieldVal}>
-                          {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—"}
-                        </span>
+                        <span className={styles.fieldVal}>{dateFormatted}</span>
                       </div>
                     </div>
 
+                    {/* Full Tribute Message on Mobile Card */}
                     {item.message && (
                       <div className={styles.tributeBox}>
                         &ldquo;{item.message}&rdquo;
@@ -477,7 +474,7 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* Attendee Details Drawer / Modal */}
+      {/* Attendee Details Modal */}
       <AnimatePresence>
         {selectedAttendee && (
           <div className={styles.modalOverlay} onClick={() => setSelectedAttendee(null)}>
@@ -517,7 +514,15 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Email</label>
-                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>{selectedAttendee.email || "—"}</p>
+                  <p style={{ margin: "0.2rem 0", fontWeight: "600", fontSize: "0.95rem" }}>
+                    {selectedAttendee.email ? (
+                      <a href={`mailto:${selectedAttendee.email}`} style={{ color: "var(--color-accent)", textDecoration: "none" }}>
+                        {selectedAttendee.email}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </p>
                 </div>
                 <div>
                   <label style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--color-text-tertiary)", fontWeight: "700" }}>Attendance</label>
