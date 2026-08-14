@@ -21,11 +21,28 @@ export default function AdminPage() {
   }, []);
 
   function mergeRecords(serverList, localList) {
+    let deletedIds = [];
+    if (typeof window !== "undefined") {
+      try {
+        deletedIds = JSON.parse(localStorage.getItem("egbule_deleted_ids") || "[]");
+      } catch {
+        deletedIds = [];
+      }
+    }
+
     const map = new Map();
 
     for (const item of serverList || []) {
       if (!item) continue;
       const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
+      if (
+        deletedIds.includes(item.id) ||
+        (item.phone && deletedIds.includes(item.phone)) ||
+        (item.firstName === "Test" && item.lastName === "User") ||
+        (item.firstName === "David" && item.lastName === "Olagbenro")
+      ) {
+        continue;
+      }
       map.set(key, item);
     }
 
@@ -33,6 +50,14 @@ export default function AdminPage() {
     for (const item of localList || []) {
       if (!item) continue;
       const key = item.id || `${item.phone || ""}_${item.firstName || ""}_${item.lastName || ""}`;
+      if (
+        deletedIds.includes(item.id) ||
+        (item.phone && deletedIds.includes(item.phone)) ||
+        (item.firstName === "Test" && item.lastName === "User") ||
+        (item.firstName === "David" && item.lastName === "Olagbenro")
+      ) {
+        continue;
+      }
       if (!map.has(key)) {
         map.set(key, item);
         missingOnServer.push(item);
@@ -73,7 +98,7 @@ export default function AdminPage() {
 
       // 4. Auto-Sync Missing Local Records back to Server Database
       if (missingOnServer.length > 0) {
-        setSyncStatus(`Auto-syncing ${missingOnServer.length} record(s) to database...`);
+        setSyncStatus(`Auto-syncing ${missingOnServer.length} new record(s) to database...`);
         try {
           await fetch("/api/rsvp", {
             method: "POST",
@@ -101,6 +126,48 @@ export default function AdminPage() {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDeleteAttendee(item, e) {
+    if (e) e.stopPropagation();
+    if (!item) return;
+
+    if (!confirm(`Are you sure you want to delete ${item.firstName} ${item.lastName}?`)) {
+      return;
+    }
+
+    try {
+      if (item.id) {
+        await fetch(`/api/rsvp?id=${encodeURIComponent(item.id)}`, {
+          method: "DELETE",
+        });
+      }
+
+      if (typeof window !== "undefined") {
+        try {
+          const stored = JSON.parse(localStorage.getItem("egbule_rsvp_submissions") || "[]");
+          const updatedLocal = stored.filter(
+            (s) => s.id !== item.id && s.phone !== item.phone
+          );
+          localStorage.setItem("egbule_rsvp_submissions", JSON.stringify(updatedLocal));
+
+          const deletedIds = JSON.parse(localStorage.getItem("egbule_deleted_ids") || "[]");
+          if (item.id && !deletedIds.includes(item.id)) deletedIds.push(item.id);
+          if (item.phone && !deletedIds.includes(item.phone)) deletedIds.push(item.phone);
+          localStorage.setItem("egbule_deleted_ids", JSON.stringify(deletedIds));
+        } catch (e) {
+          console.warn("Could not update local storage on delete:", e);
+        }
+      }
+
+      if (selectedAttendee?.id === item.id) {
+        setSelectedAttendee(null);
+      }
+
+      fetchAndSyncSubmissions();
+    } catch (err) {
+      alert("Failed to delete entry: " + err.message);
     }
   }
 
@@ -301,6 +368,7 @@ export default function AdminPage() {
                     <th>Bus</th>
                     <th>Tribute / Message</th>
                     <th>Submitted</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -343,6 +411,23 @@ export default function AdminPage() {
                         <td style={{ fontSize: "0.78rem", color: "var(--color-text-tertiary)" }}>
                           {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "—"}
                         </td>
+                        <td>
+                          <button
+                            onClick={(e) => handleDeleteAttendee(item, e)}
+                            style={{
+                              background: "rgba(220, 38, 38, 0.1)",
+                              color: "#DC2626",
+                              border: "1px solid rgba(220, 38, 38, 0.3)",
+                              padding: "0.3rem 0.65rem",
+                              borderRadius: "6px",
+                              fontSize: "0.75rem",
+                              cursor: "pointer",
+                              fontWeight: "600",
+                            }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -369,9 +454,25 @@ export default function AdminPage() {
                           📞 {item.phone || "No phone provided"}
                         </div>
                       </div>
-                      <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
-                        {isAttending ? "ATTENDING" : "DECLINED"}
-                      </span>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <span className={`${styles.statusBadge} ${isAttending ? styles.badgeYes : styles.badgeNo}`}>
+                          {isAttending ? "ATTENDING" : "DECLINED"}
+                        </span>
+                        <button
+                          onClick={(e) => handleDeleteAttendee(item, e)}
+                          style={{
+                            background: "rgba(220, 38, 38, 0.1)",
+                            color: "#DC2626",
+                            border: "1px solid rgba(220, 38, 38, 0.3)",
+                            padding: "0.3rem 0.5rem",
+                            borderRadius: "6px",
+                            fontSize: "0.72rem",
+                            cursor: "pointer",
+                          }}
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
 
                     <div className={styles.fieldGrid}>
@@ -479,7 +580,22 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "flex-end" }}>
+              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <button
+                  onClick={() => handleDeleteAttendee(selectedAttendee)}
+                  style={{
+                    background: "rgba(220, 38, 38, 0.1)",
+                    color: "#DC2626",
+                    border: "1px solid rgba(220, 38, 38, 0.3)",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "6px",
+                    fontSize: "0.82rem",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                  }}
+                >
+                  🗑️ Delete Record
+                </button>
                 <button onClick={() => setSelectedAttendee(null)} className="btn btn-secondary">
                   Close Detail View
                 </button>

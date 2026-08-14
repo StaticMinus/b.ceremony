@@ -213,3 +213,17 @@ export async function getTributes() {
   const all = await getAttendees();
   return all.filter((item) => item.message && item.message.trim().length > 0);
 }
+
+/**
+ * Delete attendee by ID
+ */
+export async function deleteAttendee(id) {
+  try {
+    await prisma.attendee.deleteMany({
+      where: { id: id },
+    });
+  } catch (err) {
+    console.warn("Database delete error:", err);
+  }
+  return await getAttendees();
+}

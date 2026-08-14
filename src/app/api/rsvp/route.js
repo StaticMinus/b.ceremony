@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAttendees, saveAttendee, saveMultipleAttendees } from "@/lib/db";
+import { getAttendees, saveAttendee, saveMultipleAttendees, deleteAttendee } from "@/lib/db";
 
 export async function POST(request) {
   try {
@@ -114,5 +114,22 @@ export async function GET(request) {
       { error: "Failed to retrieve attendees." },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing entry ID to delete." }, { status: 400 });
+    }
+
+    const updated = await deleteAttendee(id);
+    return NextResponse.json({ success: true, attendees: updated });
+  } catch (err) {
+    console.error("RSVP delete error:", err);
+    return NextResponse.json({ error: "Failed to delete entry." }, { status: 500 });
   }
 }
