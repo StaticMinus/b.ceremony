@@ -11,6 +11,8 @@ import ScrollTimeline from "./components/ScrollTimeline";
 import ParallaxGallery from "./components/ParallaxGallery";
 import ExtendedDossier from "./components/ExtendedDossier";
 import FuneralSupport from "./components/FuneralSupport";
+import Header from "./components/Header";
+import BackgroundMesh from "./components/BackgroundMesh";
 
 /* 
  * TASTE-SKILL DESIGN READ:
@@ -96,7 +98,13 @@ const BURIAL_EVENTS = [
 
 export default function Home() {
   return (
-    <main>
+    <main style={{ position: "relative" }}>
+      {/* Animated Ambient Mesh Background */}
+      <BackgroundMesh />
+
+      {/* Sticky Glassmorphic Header */}
+      <Header />
+
       {/* ═══════════════════════════════════════════════════════════ */}
       {/* HERO SECTION                                               */}
       {/* ═══════════════════════════════════════════════════════════ */}
@@ -327,7 +335,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════ */}
       {/* CREATIVE PARALLAX SCROLL GALLERY                           */}
       {/* ═══════════════════════════════════════════════════════════ */}
-      <section className={styles.gallerySection}>
+      <section className={styles.gallerySection} id="gallery">
         <div className="container-wide">
           <FadeIn>
             <div className={styles.sectionHeader}>
