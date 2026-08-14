@@ -192,7 +192,7 @@ export default function Home() {
         <div className="container">
           <FadeIn direction="up">
             <p className={styles.quoteBannerText}>
-              &ldquo;A great family man, a father every child would wish to have, a grandfather and above all, a Philanthropist who drops his food to give attention to a beggar&apos;s knock.&rdquo;
+              &ldquo;A lifetime of humanitarian philanthropy will forever remain his indelible legacy. We miss you dearly, Dad&rdquo;
             </p>
             <p className={`caption text-accent ${styles.quoteBannerAuthor}`}>
               — The Egbule Family Tribute
