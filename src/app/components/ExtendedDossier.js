@@ -27,6 +27,11 @@ const DOSSIER_SECTIONS = [
             <h4>Nze Egbule Ogbuji</h4>
             <p>&lsquo;Ogbakwuru Oluo&rsquo; — Revered Traditional Lineage</p>
           </div>
+          <div className={styles.dossierInfoCard}>
+            <span className={styles.dossierInfoTag}>FAMILY LEGACY</span>
+            <h4>Father to 4 Children</h4>
+            <p>Foster Father to 1</p>
+          </div>
         </div>
       </div>
     ),

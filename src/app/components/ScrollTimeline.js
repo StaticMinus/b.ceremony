@@ -47,6 +47,13 @@ const TIMELINE_DATA = [
     desc: "Bagged the prestigious Obanze Akoji of Ehime Mbano traditional title alongside other traditional titles. Devoted 40+ years to placing hundreds of youths across federal ministries, agencies as well as the defense forces. A 4th Degree Knight of St. Mulumba (KSM) and Jerusalem Pilgrim (JP).",
     icon: "👑",
   },
+  {
+    year: "Family Legacy",
+    title: "Family Legacy",
+    subtitle: "Devoted Family Patriarch",
+    desc: "Father to 4 Children — Foster Father to 1.",
+    icon: "👨‍👩‍👧‍👦",
+  },
 ];
 
 export default function ScrollTimeline() {
