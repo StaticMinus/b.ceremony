@@ -8,9 +8,9 @@ export default function FuneralSupport() {
   const [copied, setCopied] = useState(false);
 
   const accountInfo = {
-    bank: "Zenith Bank",
-    name: "Egbule Daniel Nze",
-    number: "1003365280",
+    bank: "Keystone bank",
+    name: "Meka Obiamaka Anthony",
+    number: "6020626163",
   };
 
   function handleCopy() {
